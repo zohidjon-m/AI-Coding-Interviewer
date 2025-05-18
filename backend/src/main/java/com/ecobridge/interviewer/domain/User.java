@@ -1,16 +1,17 @@
-package com.ecobridge.interviewer.entity;
+package com.ecobridge.interviewer.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Entity
 @Table(
         name="users",

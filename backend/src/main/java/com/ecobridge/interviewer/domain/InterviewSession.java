@@ -1,14 +1,14 @@
-package com.ecobridge.interviewer.entity;
+package com.ecobridge.interviewer.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 @Builder
