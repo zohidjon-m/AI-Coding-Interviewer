@@ -1,4 +1,4 @@
-package com.ecobridge.interviewer.entity;
+package com.ecobridge.interviewer.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
