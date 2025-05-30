@@ -21,7 +21,7 @@ export function AuthGuard({ children, requireAuth = true, redirectTo = "/auth/lo
       if (requireAuth && !user) {
         router.push(redirectTo)
       } else if (!requireAuth && user) {
-        router.push("/app/dashboard")
+        router.push("/dashboard")
       }
     }
   }, [user, loading, requireAuth, redirectTo, router])

@@ -19,7 +19,7 @@ function DashboardContent() {
           </div>
           <div className="flex items-center gap-4">
             <Button asChild>
-              <Link href="/app/interview/new">
+              <Link href="/interview">
                 <Play className="mr-2 h-4 w-4" />
                 Start Practice
               </Link>
@@ -91,7 +91,7 @@ function DashboardContent() {
                     <div className="text-right space-y-2">
                       <p className="text-sm text-slate-600">Today, 2:00 PM</p>
                       <Button size="sm" asChild>
-                        <Link href="/app/interview/1">Start Now</Link>
+                        <Link href="/interview">Start Now</Link>
                       </Button>
                     </div>
                   </div>
@@ -192,13 +192,13 @@ function DashboardContent() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start" asChild>
-                  <Link href="/app/interview/random">
+                  <Link href="/interview/random">
                     <Play className="mr-2 h-4 w-4" />
                     Random Problem
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/app/interview/mock">
+                  <Link href="/interview/mock">
                     <Calendar className="mr-2 h-4 w-4" />
                     Mock Interview
                   </Link>

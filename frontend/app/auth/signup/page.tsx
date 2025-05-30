@@ -60,7 +60,7 @@ function SignUpPageContent() {
     })
 
     if (result.success) {
-      router.push("/app/dashboard")
+      router.push("/dashboard")
     } else {
       setError(result.error || "Signup failed")
     }

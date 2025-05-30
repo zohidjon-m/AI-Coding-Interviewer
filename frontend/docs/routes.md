@@ -14,8 +14,8 @@
 |                          | `/auth/login`                 | Sign in                                                           |
 |                          | `/auth/forgot`                | Request password reset link                                       |
 |                          | `/auth/reset/:token`          | Enter new password                                                |
-| **Candidate Experience** | `/app/dashboard`              | Upcoming interviews, quick-start practice, performance snapshot   |
-|                          | `/app/history`                | Table of completed sessions & scores                              |
+| **Candidate Experience** | `/dashboard`              | Upcoming interviews, quick-start practice, performance snapshot   |
+|                          | `/history`                | Table of completed sessions & scores                              |
 |                          | `/app/settings`               | Profile, language/theme prefs, API tokens                         |
 |                          | `/app/interview/:id/precheck` | Environment check + instructions                                  |
 |                          | `/app/interview/:id`          | **Live Interview** (split Chat ↔ Code)                            |
