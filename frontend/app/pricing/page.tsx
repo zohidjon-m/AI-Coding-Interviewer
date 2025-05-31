@@ -3,35 +3,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Check, Code, ArrowRight, Star } from "lucide-react"
 import Link from "next/link"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-white">
+      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background">
         <Link href="/" className="flex items-center justify-center">
           <Code className="h-6 w-6 text-blue-600" />
-          <span className="ml-2 text-xl font-bold text-slate-900">CodeInterview AI</span>
+          <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Link
             href="/how-it-works"
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             How It Works
           </Link>
           <Link href="/pricing" className="text-sm font-medium text-blue-600">
             Pricing
           </Link>
-          <Link href="/demo" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/demo"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
             Demo
           </Link>
-          <Link href="/docs" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+          <Link
+            href="/docs"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
             Docs
           </Link>
+          <ThemeToggle />
           <Link
             href="/auth/login"
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Sign In
           </Link>
@@ -44,10 +52,10 @@ export default function PricingPage() {
           <Badge variant="secondary" className="mb-4">
             Pricing Plans
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl text-slate-900 mb-4">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl text-foreground mb-4">
             Choose the perfect plan for your goals
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Start free and upgrade as you grow. All plans include our core AI interviewer features.
           </p>
         </div>
@@ -55,13 +63,13 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <div className="grid gap-8 lg:grid-cols-3 mb-16">
           {/* Free Plan */}
-          <Card className="border-2 border-slate-200">
+          <Card className="border-2 border-border">
             <CardHeader>
               <CardTitle className="text-xl">Free</CardTitle>
               <CardDescription>Perfect for getting started</CardDescription>
               <div className="mt-4">
                 <span className="text-3xl font-bold">$0</span>
-                <span className="text-slate-600">/month</span>
+                <span className="text-muted-foreground">/month</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -109,7 +117,7 @@ export default function PricingPage() {
               <CardDescription>For serious interview preparation</CardDescription>
               <div className="mt-4">
                 <span className="text-3xl font-bold">$29</span>
-                <span className="text-slate-600">/month</span>
+                <span className="text-muted-foreground">/month</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -157,13 +165,13 @@ export default function PricingPage() {
           </Card>
 
           {/* Enterprise Plan */}
-          <Card className="border-2 border-slate-200">
+          <Card className="border-2 border-border">
             <CardHeader>
               <CardTitle className="text-xl">Enterprise</CardTitle>
               <CardDescription>For teams and organizations</CardDescription>
               <div className="mt-4">
                 <span className="text-3xl font-bold">$99</span>
-                <span className="text-slate-600">/month</span>
+                <span className="text-muted-foreground">/month</span>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -220,7 +228,7 @@ export default function PricingPage() {
                 <CardTitle className="text-lg">Can I change plans anytime?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">
+                <p className="text-muted-foreground">
                   Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll
                   prorate any billing adjustments.
                 </p>
@@ -232,7 +240,7 @@ export default function PricingPage() {
                 <CardTitle className="text-lg">What programming languages are supported?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">
+                <p className="text-muted-foreground">
                   We support Python, JavaScript, Java, C++, C#, Go, Rust, TypeScript, Swift, and Kotlin. Pro and
                   Enterprise plans include all languages, while Free includes Python, JavaScript, and Java.
                 </p>
@@ -244,7 +252,7 @@ export default function PricingPage() {
                 <CardTitle className="text-lg">Is there a free trial for paid plans?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">
+                <p className="text-muted-foreground">
                   Yes! Pro plan comes with a 14-day free trial. Enterprise customers can request a custom trial period.
                   No credit card required for the trial.
                 </p>
@@ -256,7 +264,7 @@ export default function PricingPage() {
                 <CardTitle className="text-lg">How does the AI interviewer work?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">
+                <p className="text-muted-foreground">
                   Our AI interviewer uses advanced language models to conduct realistic coding interviews. It can ask
                   follow-up questions, provide hints, and give detailed feedback on your solutions.
                 </p>
@@ -266,9 +274,9 @@ export default function PricingPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center mt-16 p-8 bg-blue-50 rounded-lg">
+        <div className="text-center mt-16 p-8 bg-muted rounded-lg">
           <h2 className="text-2xl font-bold mb-4">Ready to start practicing?</h2>
-          <p className="text-slate-600 mb-6">
+          <p className="text-muted-foreground mb-6">
             Join thousands of developers who have improved their interview skills with our platform.
           </p>
           <Button size="lg" asChild>

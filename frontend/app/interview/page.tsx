@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Link } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
@@ -37,6 +39,7 @@ export default function LiveInterviewPage() {
     # Your solution here
     pass`)
   const [output, setOutput] = useState<string>("") // 추가
+  const router = useRouter();
 
   const [chatMessages] = useState([
     {
@@ -98,6 +101,11 @@ export default function LiveInterviewPage() {
       {/* Header */}
       <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
+          {/* Added logo with link to home */}
+          <Link href="/" className="flex items-center mr-4">
+            <Code className="h-6 w-6 text-blue-600" />
+            <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
+          </Link>
           <h1 className="text-lg font-semibold">Live Interview</h1>
           <Badge variant="outline">
             Question {currentQuestion}/{totalQuestions}
@@ -115,7 +123,11 @@ export default function LiveInterviewPage() {
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
-          <Button variant="destructive" size="sm">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => router.push("/dashboard")}
+          >
             <Square className="h-4 w-4 mr-2" />
             End Interview
           </Button>

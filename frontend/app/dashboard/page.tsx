@@ -2,22 +2,32 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3 } from "lucide-react"
+import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3, Code } from "lucide-react"
 import Link from "next/link"
 import { AuthGuard } from "@/components/auth-guard"
 import { UserNav } from "@/components/user-nav"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 function DashboardContent() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b px-6 py-4">
+      <header className="bg-background border-b px-6 py-4">
         <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-            <p className="text-slate-600">Welcome back! Ready for your next challenge?</p>
+          <div className="flex items-center gap-6">
+            {/* Logo - Added link to home page */}
+            <Link href="/" className="flex items-center mr-6">
+              <Code className="h-6 w-6 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
+            </Link>
+
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+              <p className="text-muted-foreground">Welcome back! Ready for your next challenge?</p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Button asChild>
               <Link href="/interview">
                 <Play className="mr-2 h-4 w-4" />
@@ -82,14 +92,14 @@ function DashboardContent() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-1">
                       <h4 className="font-medium">Algorithm & Data Structures</h4>
-                      <p className="text-sm text-slate-600">Medium difficulty • 45 minutes</p>
+                      <p className="text-sm text-muted-foreground">Medium difficulty • 45 minutes</p>
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary">Arrays</Badge>
                         <Badge variant="secondary">Dynamic Programming</Badge>
                       </div>
                     </div>
                     <div className="text-right space-y-2">
-                      <p className="text-sm text-slate-600">Today, 2:00 PM</p>
+                      <p className="text-sm text-muted-foreground">Today, 2:00 PM</p>
                       <Button size="sm" asChild>
                         <Link href="/interview">Start Now</Link>
                       </Button>
@@ -98,14 +108,14 @@ function DashboardContent() {
                   <div className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="space-y-1">
                       <h4 className="font-medium">System Design Basics</h4>
-                      <p className="text-sm text-slate-600">Hard difficulty • 60 minutes</p>
+                      <p className="text-sm text-muted-foreground">Hard difficulty • 60 minutes</p>
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary">Scalability</Badge>
                         <Badge variant="secondary">Architecture</Badge>
                       </div>
                     </div>
                     <div className="text-right space-y-2">
-                      <p className="text-sm text-slate-600">Tomorrow, 10:00 AM</p>
+                      <p className="text-sm text-muted-foreground">Tomorrow, 10:00 AM</p>
                       <Button size="sm" variant="outline">
                         Schedule
                       </Button>
@@ -127,22 +137,22 @@ function DashboardContent() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <Award className="h-5 w-5 text-green-600" />
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Award className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium">Completed: Two Sum Problem</h4>
-                      <p className="text-sm text-slate-600">Score: 85% • Time: 12 minutes</p>
+                      <p className="text-sm text-muted-foreground">Score: 85% • Time: 12 minutes</p>
                     </div>
                     <Badge variant="outline">2 hours ago</Badge>
                   </div>
                   <div className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-medium">Started: Binary Tree Traversal</h4>
-                      <p className="text-sm text-slate-600">In progress • 8 minutes elapsed</p>
+                      <p className="text-sm text-muted-foreground">In progress • 8 minutes elapsed</p>
                     </div>
                     <Badge variant="outline">1 day ago</Badge>
                   </div>
@@ -198,7 +208,7 @@ function DashboardContent() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/interview/mock">
+                  <Link href="/app/interview/mock">
                     <Calendar className="mr-2 h-4 w-4" />
                     Mock Interview
                   </Link>
@@ -219,21 +229,21 @@ function DashboardContent() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <Award className="h-4 w-4 text-yellow-600" />
+                  <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
+                    <Award className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">First Perfect Score</p>
-                    <p className="text-xs text-slate-600">Solved without hints</p>
+                    <p className="text-xs text-muted-foreground">Solved without hints</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Target className="h-4 w-4 text-blue-600" />
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                    <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
                     <p className="font-medium text-sm">Speed Demon</p>
-                    <p className="text-xs text-slate-600">Solved in under 10 minutes</p>
+                    <p className="text-xs text-muted-foreground">Solved in under 10 minutes</p>
                   </div>
                 </div>
               </CardContent>

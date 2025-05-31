@@ -95,7 +95,7 @@ export default function DemoPage() {
         </nav>
       </header>
 
-      <main className="max-w-screen-2xl mx-auto px-4 py-8">
+      <main className="max-w-screen-2xl mx-auto px-4 py-8 pb-16">
         {/* Hero Section */}
         <div className="text-center mb-8">
           <Badge variant="secondary" className="mb-4">
@@ -208,7 +208,7 @@ export default function DemoPage() {
         )}
 
         {selectedDemo === "interview" && (
-          <div className="bg-white rounded-lg border shadow-sm">
+          <div className="bg-white rounded-lg border shadow-sm relative" style={{ minHeight: 400 }}>
             {/* Demo Header */}
             <div className="p-4 border-b flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -222,7 +222,7 @@ export default function DemoPage() {
             </div>
 
             {/* Demo Content */}
-            <div className="grid lg:grid-cols-2 h-[600px]">
+            <div className="grid lg:grid-cols-2 h-[600px] overflow-y-auto">
               {/* Chat Panel */}
               <div className="border-r flex flex-col">
                 <div className="p-4 border-b bg-slate-50">
@@ -306,9 +306,8 @@ export default function DemoPage() {
                 </div>
               </div>
             </div>
-
             {/* Demo Footer */}
-            <div className="p-4 border-t bg-blue-50 text-center">
+            <div className="fixed bottom-0 left-0 w-full p-4 border-t bg-blue-50 text-center z-10">
               <p className="text-sm text-slate-600 mb-3">
                 This is a read-only demo. Sign up to interact with the AI interviewer and practice coding problems.
               </p>
