@@ -26,43 +26,49 @@ import dynamic from "next/dynamic"
 // 동적 import로 SSR 이슈 방지
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
+const MONACO_THEMES = [
+  { label: "Light", value: "light" },
+  { label: "Dark", value: "vs-dark" },
+  { label: "High Contrast", value: "hc-black" },
+];
+
 export default function LiveInterviewPage() {
   const [timeLeft, setTimeLeft] = useState(45 * 60) // 45 minutes in seconds
   const [currentQuestion, setCurrentQuestion] = useState(1)
   const [totalQuestions] = useState(5)
   const [chatMessage, setChatMessage] = useState("")
-  const [code, setCode] = useState(`def two_sum(nums, target):
-    """
-    Given an array of integers nums and an integer target,
-    return indices of the two numbers such that they add up to target.
-    """
-    # Your solution here
-    pass`)
-  const [output, setOutput] = useState<string>("") // 추가
   const router = useRouter();
 
-  const [chatMessages] = useState([
+  const [problems, setProblems] = useState<string[]>(["Loading problem..."]);
+  const [codes, setCodes] = useState<string[]>(["# Write your solution here"]);
+  const [outputs, setOutputs] = useState<string[]>([""]);
+  const [chats, setChats] = useState<any[][]>([[
     {
       id: 1,
       sender: "ai",
-      message:
-        "Hello! I'm your AI interviewer. Let's start with the first problem. Please read through the Two Sum problem and let me know when you're ready to begin coding.",
-      timestamp: "2:00 PM",
-    },
-    {
-      id: 2,
-      sender: "user",
-      message: "I've read the problem. I think I can solve this using a hash map approach for O(n) time complexity.",
-      timestamp: "2:01 PM",
-    },
-    {
-      id: 3,
-      sender: "ai",
-      message:
-        "Excellent! That's the optimal approach. Please go ahead and implement your solution. Feel free to explain your thought process as you code.",
-      timestamp: "2:01 PM",
-    },
-  ])
+      message: "Hello! I'm your AI interviewer. Let's start with the first problem.\n\n",
+      timestamp: "", // 초기값은 빈 문자열
+    }
+  ]]);
+
+  const [editorTheme, setEditorTheme] = useState("light");
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    setChats([[
+      {
+        id: 1,
+        sender: "ai",
+        message: "Hello! I'm your AI interviewer. Let's start with the first problem.\n\n",
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }).replace("오전", "").replace("오후", "").trim() + " " +
+          (new Date().getHours() < 12 ? "AM" : "PM"),
+      }
+    ]]);
+  }, []);
 
   // Timer countdown
   useEffect(() => {
@@ -72,6 +78,21 @@ export default function LiveInterviewPage() {
     return () => clearInterval(timer)
   }, [])
 
+  // 문제 생성 요청
+  useEffect(() => {
+    const fetchProblem = async () => {
+      const res = await fetch("/api/problem", { method: "POST" });
+      const data = await res.json();
+      setProblems([data.problem]);
+    };
+    fetchProblem();
+  }, []);
+
+  const problem = problems[currentQuestion - 1];
+  const code = codes[currentQuestion - 1];
+  const output = outputs[currentQuestion - 1];
+  const chatMessages = chats[currentQuestion - 1];
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
@@ -80,29 +101,146 @@ export default function LiveInterviewPage() {
 
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
-      // Handle sending message
-      setChatMessage("")
+      const newChats = [...chats];
+      newChats[currentQuestion - 1] = [
+        ...newChats[currentQuestion - 1],
+        {
+          id: newChats[currentQuestion - 1].length + 1,
+          sender: "user",
+          message: chatMessage,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }).replace("오전", "").replace("오후", "").trim() + " " +
+            (new Date().getHours() < 12 ? "AM" : "PM"),
+        },
+      ];
+      setChats(newChats);
+      setChatMessage("");
     }
   }
 
-  const handleRunCode = () => {
-    // 실제로는 서버에 코드 실행 요청을 보내야 하지만, 예시로 결과를 임의로 출력
-    setOutput("실행 결과 예시: Hello, world!\n(여기에 실제 실행 결과가 표시됩니다.)")
-    console.log("Running code:", code)
+  const handleRunCode = async () => {
+    setOutputs((prev) => {
+      const newOutputs = [...prev];
+      newOutputs[currentQuestion - 1] = "실행 중...";
+      return newOutputs;
+    });
+
+    try {
+      const res = await fetch("/api/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      setOutputs((prev) => {
+        const newOutputs = [...prev];
+        newOutputs[currentQuestion - 1] = data.output ?? "실행 결과를 받아오지 못했습니다.";
+        return newOutputs;
+      });
+    } catch (e) {
+      setOutputs((prev) => {
+        const newOutputs = [...prev];
+        newOutputs[currentQuestion - 1] = "실행 중 오류가 발생했습니다.";
+        return newOutputs;
+      });
+    }
   }
 
-  const handleSubmitSolution = () => {
-    // Handle solution submission
-    console.log("Submitting solution:", code)
+  const handleSubmitSolution = async () => {
+    setOutputs((prev) => {
+      const newOutputs = [...prev];
+      newOutputs[currentQuestion - 1] = "채점 중...";
+      return newOutputs;
+    });
+
+    // 문제와 코드를 함께 전송
+    const res = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        problem, // 현재 문제
+      }),
+    });
+    const data = await res.json();
+
+    // 채팅에 AI의 피드백 추가
+    const newChats = [...chats];
+    newChats[currentQuestion - 1] = [
+      ...newChats[currentQuestion - 1],
+      {
+        id: newChats[currentQuestion - 1].length + 1,
+        sender: "ai",
+        message: data.feedback, // AI의 피드백 메시지
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }).replace("오전", "").replace("오후", "").trim() + " " +
+          (new Date().getHours() < 12 ? "AM" : "PM"),
+      },
+    ];
+    setChats(newChats);
+
+    // 테스트 결과 출력
+    setOutputs((prev) => {
+      const newOutputs = [...prev];
+      newOutputs[currentQuestion - 1] = data.testResultText;
+      return newOutputs;
+    });
   }
+
+  const handleNextQuestion = async () => {
+    if (currentQuestion < totalQuestions) {
+      const nextIdx = currentQuestion;
+      // 다음 문제가 없으면 새로 생성
+      if (!problems[nextIdx]) {
+        setProblems((prev) => [...prev, "Loading problem..."]);
+        setCodes((prev) => [...prev, "# Write your solution here"]);
+        setOutputs((prev) => [...prev, ""]);
+        setChats((prev) => [
+          ...prev,
+          [{
+            id: 1,
+            sender: "ai",
+            message: "Hello! I'm your AI interviewer. Let's start with the next problem.\n\n",
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }).replace("오전", "").replace("오후", "").trim() + " " +
+              (new Date().getHours() < 12 ? "AM" : "PM"),
+          }]
+        ]);
+        // 문제 받아오기
+        const res = await fetch("/api/problem", { method: "POST" });
+        const data = await res.json();
+        setProblems((prev) => {
+          const copy = [...prev];
+          copy[nextIdx] = data.problem;
+          return copy;
+        });
+      }
+      setCurrentQuestion((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 1) {
+      setCurrentQuestion((prev) => prev - 1);
+    }
+  };
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
+    <div className="h-screen flex flex-col bg-slate-50 dark:bg-[#232e41]">
       {/* Header */}
-      <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
+      <header className="w-full min-h-[52px] flex items-center justify-between border-b bg-white dark:bg-[#181f2a] px-2 lg:px-4 py-2">
         <div className="flex items-center gap-4">
-          {/* Added logo with link to home */}
-          <Link href="/" className="flex items-center mr-4">
+          {/* 로고, 타이틀, 배지 */}
+          <Link href="/" className="flex items-center mr-2">
             <Code className="h-6 w-6 text-blue-600" />
             <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
           </Link>
@@ -119,10 +257,35 @@ export default function LiveInterviewPage() {
               {formatTime(timeLeft)}
             </span>
           </div>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setThemeDropdownOpen((open) => !open)}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+            {themeDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
+                <div className="p-2 font-semibold text-sm text-slate-700">에디터 테마 선택</div>
+                {MONACO_THEMES.map((theme) => (
+                  <button
+                    key={theme.value}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-100 ${
+                      editorTheme === theme.value ? "font-bold text-blue-600" : ""
+                    }`}
+                    onClick={() => {
+                      setEditorTheme(theme.value);
+                      setThemeDropdownOpen(false);
+                    }}
+                  >
+                    {theme.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <Button
             variant="destructive"
             size="sm"
@@ -139,7 +302,7 @@ export default function LiveInterviewPage() {
         {/* Desktop: Side by side layout */}
         <div className="hidden lg:flex flex-1">
           {/* Chat Panel */}
-          <div className="w-1/2 border-r bg-white flex flex-col">
+          <div className="w-1/2 border-r bg-white dark:bg-[#181f2a] flex flex-col">
             <div className="p-4 border-b">
               <h2 className="font-semibold flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
@@ -148,29 +311,17 @@ export default function LiveInterviewPage() {
             </div>
 
             {/* Problem Description */}
-            <div className="p-4 border-b bg-slate-50">
-              <h3 className="font-medium mb-2">Problem: Two Sum</h3>
-              <p className="text-sm text-slate-600 mb-3">
-                Given an array of integers <code className="bg-slate-200 px-1 rounded">nums</code> and an integer{" "}
-                <code className="bg-slate-200 px-1 rounded">target</code>, return indices of the two numbers such that
-                they add up to target.
+            <div className="p-4 border-b bg-slate-50 dark:bg-[#232e41]">
+              <h3 className="font-medium mb-2">Problem</h3>
+              <p className="text-sm text-slate-600 mb-3 whitespace-pre-line">
+                {problem}
               </p>
-              <div className="space-y-2">
-                <div>
-                  <strong className="text-sm">Example:</strong>
-                  <pre className="text-xs bg-white p-2 rounded border mt-1">
-                    {`Input: nums = [2,7,11,15], target = 9
-Output: [0,1]
-Explanation: nums[0] + nums[1] = 2 + 7 = 9`}
-                  </pre>
-                </div>
-              </div>
             </div>
 
             {/* Chat Messages */}
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
-                {chatMessages.map((msg) => (
+                {chatMessages?.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[80%] rounded-lg p-3 ${
@@ -215,7 +366,7 @@ Explanation: nums[0] + nums[1] = 2 + 7 = 9`}
           </div>
 
           {/* Code Editor Panel */}
-          <div className="w-1/2 bg-white flex flex-col">
+          <div className="w-1/2 bg-white dark:bg-[#181f2a] flex flex-col">
             <div className="p-4 border-b flex items-center justify-between">
               <h2 className="font-semibold flex items-center gap-2">
                 <Code className="h-4 w-4" />
@@ -238,8 +389,12 @@ Explanation: nums[0] + nums[1] = 2 + 7 = 9`}
                   height="350px" // 또는 "40vh" 등으로 고정
                   language="python"
                   value={code}
-                  onChange={(value) => setCode(value ?? "")}
-                  theme="vs-light"
+                  onChange={(value) => {
+                    const newCodes = [...codes];
+                    newCodes[currentQuestion - 1] = value ?? "";
+                    setCodes(newCodes);
+                  }}
+                  theme={editorTheme}
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
@@ -251,14 +406,14 @@ Explanation: nums[0] + nums[1] = 2 + 7 = 9`}
                 />
               </div>
               {/* Output 영역 */}
-              <div className="mt-4 bg-slate-100 rounded p-3 font-mono text-sm min-h-[60px] whitespace-pre-wrap">
+              <div className="mt-4 bg-slate-100 dark:bg-[#232e41] rounded p-3 font-mono text-sm min-h-[60px] whitespace-pre-wrap">
                 Output:
                 {output ? output : "실행 결과가 여기에 표시됩니다."}
               </div>
             </div>
 
             {/* Test Results */}
-            <div className="border-t p-4 bg-slate-50">
+            <div className="border-t p-4 bg-slate-50 dark:bg-[#232e41]">
               <h3 className="font-medium mb-2">Test Results</h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -300,13 +455,23 @@ Explanation: nums[0] + nums[1] = 2 + 7 = 9`}
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t px-6 py-3 flex items-center justify-between">
+      <footer className="bg-white dark:bg-[#181f2a] border-t px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" disabled={currentQuestion === 1}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentQuestion === 1}
+            onClick={handlePreviousQuestion}
+          >
             <ChevronLeft className="h-4 w-4 mr-2" />
             Previous
           </Button>
-          <Button variant="outline" size="sm" disabled={currentQuestion === totalQuestions}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentQuestion === totalQuestions}
+            onClick={handleNextQuestion}
+          >
             Next
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
