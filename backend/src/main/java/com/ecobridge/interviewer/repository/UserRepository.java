@@ -11,7 +11,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);                // login / lookup
     boolean existsByEmail(String email);                     // fast uniqueness check
-    boolean existsByEmailAndPassword(String email, String password);
-//    List<User> findByRoleOrderByCreatedAtDesc(User.Role role);    // admin screens
-    List<User> findByRoleOrderByCreatedAtDesc(User.Role role);  // admin screens
+    List<User> findByRoleOrderByCreatedAtDesc(User.Role role);    // admin screens
 }

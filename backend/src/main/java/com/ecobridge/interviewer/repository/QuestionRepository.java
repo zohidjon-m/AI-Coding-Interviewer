@@ -12,5 +12,5 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     List<Question> findByPhaseIdOrderById(Long phaseId);      //show all Qs in a phase
-    List<Question> findByPhaseIdAndQuestionType(Long phaseId, Question.QuestionType type);  //branching logic
+    List<Question> findByPhaseIdAndType(Long phaseId, Question.QuestionType type);  //branching logic
  }
