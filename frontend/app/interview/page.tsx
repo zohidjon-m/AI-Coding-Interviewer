@@ -81,7 +81,15 @@ export default function LiveInterviewPage() {
   // 문제 생성 요청
   useEffect(() => {
     const fetchProblem = async () => {
-      const res = await fetch("/api/problem", { method: "POST" });
+      const res = await fetch("/api/problem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language: "HTML",
+          stack: "React",
+          difficulty: "medium",
+        }),
+      });
       const data = await res.json();
       setProblems([data.problem]);
     };
@@ -216,7 +224,15 @@ export default function LiveInterviewPage() {
           }]
         ]);
         // 문제 받아오기
-        const res = await fetch("/api/problem", { method: "POST" });
+        const res = await fetch("/api/problem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: "JavaScript",
+            stack: "React",
+            difficulty: "medium",
+          }),
+        });
         const data = await res.json();
         setProblems((prev) => {
           const copy = [...prev];
