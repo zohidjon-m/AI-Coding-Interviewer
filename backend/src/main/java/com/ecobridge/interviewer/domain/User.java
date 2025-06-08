@@ -18,7 +18,7 @@ import java.util.List;
         uniqueConstraints = @UniqueConstraint(name="uk_user_email", columnNames = "email"),
         indexes = @Index(name="idx_user_email", columnList = "email")
 )
-public class User extends Auditable {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +29,6 @@ public class User extends Auditable {
 
     @Column(nullable = false, length = 120)
     private String fullName;
-
-    @Column(nullable = false, length = 120)
-    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 40)

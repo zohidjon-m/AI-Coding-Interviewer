@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface PhaseRepository extends JpaRepository<Phase, Long>
 {
-    List<Phase> findBySessionIdOrderByPhaseTypeAsc(Long sessionId);    // render interview flow
-//    Optional<Phase> findFirstBySessionIdAndTitle(Long sessionId, String title);
+    List<Phase> findBySessionIdOrderByOrderAsc(Long sessionId);    // render interview flow
+    Optional<Phase> findFirstBySessionIdAndTitle(Long sessionId, String title);
 }
