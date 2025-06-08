@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Play, Code, MessageSquare, Clock, ArrowRight, Eye, Lock } from "lucide-react"
 import Link from "next/link"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { UserNav } from "@/components/user-nav"
 
 export default function DemoPage() {
   const [selectedDemo, setSelectedDemo] = useState<"overview" | "interview">("overview")
@@ -60,52 +62,45 @@ export default function DemoPage() {
     return []  # No solution found`
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-white">
+      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <Link href="/" className="flex items-center justify-center">
           <Code className="h-6 w-6 text-blue-600" />
-          <span className="ml-2 text-xl font-bold text-slate-900">CodeInterview AI</span>
+          <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Link
             href="/how-it-works"
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             How It Works
           </Link>
-          <Link href="/pricing" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-            Pricing
-          </Link>
-          <Link href="/demo" className="text-sm font-medium text-blue-600">
+          <Link href="/demo" className="text-sm font-medium text-primary">
             Demo
           </Link>
-          <Link href="/docs" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
-            Docs
-          </Link>
           <Link
-            href="/auth/login"
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            href="/pricing"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Sign In
+            Pricing
           </Link>
-          <Button asChild size="sm">
-            <Link href="/auth/signup">Get Started</Link>
-          </Button>
+          <ThemeToggle />
+          <UserNav />
         </nav>
       </header>
 
-      <main className="max-w-screen-2xl mx-auto px-4 py-8 pb-16">
+      <main className={`max-w-screen-2xl mx-auto px-4 py-8 ${selectedDemo === "interview" ? "pb-36" : "pb-16"}`}>
         {/* Hero Section */}
         <div className="text-center mb-8">
           <Badge variant="secondary" className="mb-4">
             <Eye className="w-3 h-3 mr-1" />
             Live Demo
           </Badge>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-slate-900 mb-4">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground mb-4">
             Experience AI-Powered Coding Interviews
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto mb-6">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             See how our platform works with this interactive demo. Experience the real interview environment without
             creating an account.
           </p>
@@ -129,52 +124,52 @@ export default function DemoPage() {
           <div className="space-y-8">
             {/* Feature Showcase */}
             <div className="grid gap-6 lg:grid-cols-3">
-              <Card className="border-0 shadow-sm">
+              <Card className="border shadow-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <MessageSquare className="h-6 w-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mb-4">
+                    <MessageSquare className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <CardTitle>AI Interviewer Chat</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Engage in natural conversations with our AI that adapts to your responses and provides contextual
                     hints.
                   </p>
-                  <div className="bg-slate-50 p-3 rounded border text-sm">
+                  <div className="bg-muted p-3 rounded border text-sm">
                     <div className="font-medium mb-1">AI:</div>
                     <p>"Can you explain the time complexity of your approach?"</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-sm">
+              <Card className="border shadow-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                    <Code className="h-6 w-6 text-green-600" />
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mb-4">
+                    <Code className="h-6 w-6 text-green-600 dark:text-green-400" />
                   </div>
                   <CardTitle>Live Code Editor</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Write and test code in our advanced editor with syntax highlighting and real-time execution.
                   </p>
-                  <div className="bg-slate-900 text-green-400 p-3 rounded text-sm font-mono">
+                  <div className="bg-slate-900 dark:bg-slate-800 text-green-400 p-3 rounded text-sm font-mono">
                     <div>def two_sum(nums, target):</div>
                     <div className="ml-4"># Your solution here</div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-sm">
+              <Card className="border shadow-sm">
                 <CardHeader>
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                    <Clock className="h-6 w-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mb-4">
+                    <Clock className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <CardTitle>Real-time Feedback</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Get instant feedback on your code, performance metrics, and improvement suggestions.
                   </p>
                   <div className="space-y-2">
@@ -192,9 +187,9 @@ export default function DemoPage() {
             </div>
 
             {/* Call to Action */}
-            <div className="text-center bg-blue-50 p-8 rounded-lg">
+            <div className="text-center bg-muted/50 p-8 rounded-lg">
               <h2 className="text-2xl font-bold mb-4">Ready to try the full experience?</h2>
-              <p className="text-slate-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Create your free account and start practicing with unlimited access to our AI interviewer.
               </p>
               <Button size="lg" asChild>
@@ -208,14 +203,14 @@ export default function DemoPage() {
         )}
 
         {selectedDemo === "interview" && (
-          <div className="bg-white rounded-lg border shadow-sm relative" style={{ minHeight: 400 }}>
+          <div className="bg-card rounded-lg border shadow-sm relative" style={{ minHeight: 400 }}>
             {/* Demo Header */}
             <div className="p-4 border-b flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <h2 className="font-semibold">Demo Interview Session</h2>
                 <Badge variant="outline">Read-Only Demo</Badge>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Lock className="h-4 w-4" />
                 Demo Mode - Sign up for full access
               </div>
@@ -225,14 +220,14 @@ export default function DemoPage() {
             <div className="grid lg:grid-cols-2 h-[600px] overflow-y-auto">
               {/* Chat Panel */}
               <div className="border-r flex flex-col">
-                <div className="p-4 border-b bg-slate-50">
+                <div className="p-4 border-b bg-muted/30">
                   <h3 className="font-medium mb-2">Problem: Two Sum</h3>
-                  <p className="text-sm text-slate-600 mb-3">
-                    Given an array of integers <code className="bg-slate-200 px-1 rounded">nums</code> and an integer{" "}
-                    <code className="bg-slate-200 px-1 rounded">target</code>, return indices of the two numbers such
-                    that they add up to target.
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Given an array of integers <code className="bg-muted px-1 rounded">nums</code> and an integer{" "}
+                    <code className="bg-muted px-1 rounded">target</code>, return indices of the two numbers such that
+                    they add up to target.
                   </p>
-                  <div className="text-xs bg-white p-2 rounded border">
+                  <div className="text-xs bg-card p-2 rounded border">
                     <strong>Example:</strong>
                     <br />
                     Input: nums = [2,7,11,15], target = 9<br />
@@ -246,11 +241,13 @@ export default function DemoPage() {
                       <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                         <div
                           className={`max-w-[80%] rounded-lg p-3 ${
-                            msg.sender === "user" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-900"
+                            msg.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                           }`}
                         >
                           <p className="text-sm">{msg.message}</p>
-                          <p className={`text-xs mt-1 ${msg.sender === "user" ? "text-blue-100" : "text-slate-500"}`}>
+                          <p
+                            className={`text-xs mt-1 ${msg.sender === "user" ? "text-primary-foreground/70" : "text-muted-foreground"}`}
+                          >
                             {msg.timestamp}
                           </p>
                         </div>
@@ -284,10 +281,10 @@ export default function DemoPage() {
                 </div>
 
                 <div className="flex-1 p-4">
-                  <pre className="text-sm font-mono text-slate-800 whitespace-pre-wrap">{demoCode}</pre>
+                  <pre className="text-sm font-mono text-foreground whitespace-pre-wrap">{demoCode}</pre>
                 </div>
 
-                <div className="border-t p-4 bg-slate-50">
+                <div className="border-t p-4 bg-muted/30">
                   <h4 className="font-medium mb-2">Test Results</h4>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
@@ -306,9 +303,13 @@ export default function DemoPage() {
                 </div>
               </div>
             </div>
+
+            {/* Spacer to prevent overlap with fixed footer */}
+            <div className="h-20"></div>
+
             {/* Demo Footer */}
-            <div className="fixed bottom-0 left-0 w-full p-4 border-t bg-blue-50 text-center z-10">
-              <p className="text-sm text-slate-600 mb-3">
+            <div className="fixed bottom-0 left-0 w-full p-4 border-t bg-muted/80 backdrop-blur-sm text-center z-10">
+              <p className="text-sm text-muted-foreground mb-3">
                 This is a read-only demo. Sign up to interact with the AI interviewer and practice coding problems.
               </p>
               <Button asChild>

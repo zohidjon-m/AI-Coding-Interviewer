@@ -4,12 +4,13 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Code, ArrowRight, Star } from "lucide-react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { UserNav } from "@/components/user-nav"
 
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background">
+      <header className="px-4 lg:px-6 h-16 flex items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <Link href="/" className="flex items-center justify-center">
           <Code className="h-6 w-6 text-blue-600" />
           <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
@@ -21,28 +22,17 @@ export default function PricingPage() {
           >
             How It Works
           </Link>
-          <Link href="/pricing" className="text-sm font-medium text-blue-600">
-            Pricing
-          </Link>
           <Link
             href="/demo"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Demo
           </Link>
-          <Link
-            href="/docs"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Docs
+          <Link href="/pricing" className="text-sm font-medium text-primary">
+            Pricing
           </Link>
           <ThemeToggle />
-          <Link
-            href="/auth/login"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign In
-          </Link>
+          <UserNav />
         </nav>
       </header>
 
