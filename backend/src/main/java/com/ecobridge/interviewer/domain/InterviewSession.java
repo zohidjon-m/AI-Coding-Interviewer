@@ -35,6 +35,10 @@ public class InterviewSession extends Auditable {
     private Instant startedAt;
     private Instant endedAt;
 
+    /* -------------- NEW: SESSION PREFERENCES -------------- */
+    @Embedded
+    private SessionPreferences preferences;
+
     // ---------- RELATIONS ----------
     @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private McpContext mcpContext;
