@@ -42,5 +42,29 @@ public class Question extends Auditable {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers = new ArrayList<>();
 
+
     public enum QuestionType { CODING, SYSTEM_DESIGN, OPEN }
+
+
+    public static Question of(Phase phase, String prompt) {
+        return Question.builder()
+                .phase(phase)
+                .prompt(prompt)
+                .questionType(fromPhaseType(phase.getPhaseType()))
+                .metadata(new HashMap<>())
+                .build();
+    }
+
+    private static QuestionType fromPhaseType(Phase.PhaseType phaseType) {
+        return switch (phaseType) {
+            case BASELINE     -> QuestionType.OPEN;
+            case SCENARIO     -> QuestionType.CODING;
+            case ARCHITECTURE -> QuestionType.SYSTEM_DESIGN;
+            case DEEP_DIVE    -> QuestionType.CODING;
+        };
+    }
+
 }
+
+
+
