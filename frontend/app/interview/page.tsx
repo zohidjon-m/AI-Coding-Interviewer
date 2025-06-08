@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Link } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -38,8 +38,15 @@ export default function LiveInterviewPage() {
   const [totalQuestions] = useState(5)
   const [chatMessage, setChatMessage] = useState("")
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedDifficulty = searchParams.get("difficulty") || "easy";
+  const selectedStack = searchParams.get("stack") || "";
+  const selectedLanguage = searchParams.get("language") || "Python";
 
-  const [problems, setProblems] = useState<string[]>(["Loading problem..."]);
+  // 문제 상태를 아래처럼 선언
+  const [problems, setProblems] = useState<{ problem: string; type: "theory" | "coding" }[]>([
+    { problem: "Loading problem...", type: "coding" }
+  ]);
   const [codes, setCodes] = useState<string[]>(["# Write your solution here"]);
   const [outputs, setOutputs] = useState<string[]>([""]);
   const [chats, setChats] = useState<any[][]>([[
@@ -85,21 +92,21 @@ export default function LiveInterviewPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          language: "HTML",
-          stack: "React",
-          difficulty: "medium",
+          language: selectedLanguage,
+          stack: selectedStack,
+          difficulty: selectedDifficulty,
         }),
       });
       const data = await res.json();
-      setProblems([data.problem]);
+      setProblems([{ problem: data.problem, type: data.type }]);
     };
     fetchProblem();
-  }, []);
+  }, [selectedLanguage, selectedStack, selectedDifficulty]);
 
-  const problem = problems[currentQuestion - 1];
+  const { problem, type: problemType } = problems[currentQuestion - 1] || {};
   const code = codes[currentQuestion - 1];
   const output = outputs[currentQuestion - 1];
-  const chatMessages = chats[currentQuestion - 1];
+  const chatMessages = chats[currentQuestion - 1] || [];
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -129,6 +136,13 @@ export default function LiveInterviewPage() {
     }
   }
 
+  const languageIdMap: Record<string, number> = {
+    Python: 71,
+    JavaScript: 63,
+    Java: 62,
+    // 필요시 추가
+  };
+
   const handleRunCode = async () => {
     setOutputs((prev) => {
       const newOutputs = [...prev];
@@ -140,7 +154,10 @@ export default function LiveInterviewPage() {
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({
+          code,
+          languageId: languageIdMap[selectedLanguage] || 71,
+        }),
       });
       const data = await res.json();
       setOutputs((prev) => {
@@ -206,37 +223,50 @@ export default function LiveInterviewPage() {
       const nextIdx = currentQuestion;
       // 다음 문제가 없으면 새로 생성
       if (!problems[nextIdx]) {
-        setProblems((prev) => [...prev, "Loading problem..."]);
-        setCodes((prev) => [...prev, "# Write your solution here"]);
-        setOutputs((prev) => [...prev, ""]);
-        setChats((prev) => [
-          ...prev,
-          [{
-            id: 1,
-            sender: "ai",
-            message: "Hello! I'm your AI interviewer. Let's start with the next problem.\n\n",
-            timestamp: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }).replace("오전", "").replace("오후", "").trim() + " " +
-              (new Date().getHours() < 12 ? "AM" : "PM"),
-          }]
-        ]);
         // 문제 받아오기
         const res = await fetch("/api/problem", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            language: "JavaScript",
-            stack: "React",
-            difficulty: "medium",
+            language: selectedLanguage,
+            stack: selectedStack,
+            difficulty: selectedDifficulty,
           }),
         });
         const data = await res.json();
+
+        // 문제, 코드, 출력, 채팅 모두 안전하게 추가
         setProblems((prev) => {
           const copy = [...prev];
-          copy[nextIdx] = data.problem;
+          copy[nextIdx] = { problem: data.problem, type: data.type };
+          return copy;
+        });
+        setCodes((prev) => {
+          const copy = [...prev];
+          copy[nextIdx] = "# Write your solution here";
+          return copy;
+        });
+        setOutputs((prev) => {
+          const copy = [...prev];
+          copy[nextIdx] = "";
+          return copy;
+        });
+        setChats((prev) => {
+          const copy = [...prev];
+          copy[nextIdx] = [
+            {
+              id: 1,
+              sender: "ai",
+              message: data.problem, // 문제 설명을 첫 메시지로!
+              timestamp: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              }).replace("오전", "").replace("오후", "").trim() +
+                " " +
+                (new Date().getHours() < 12 ? "AM" : "PM"),
+            },
+          ];
           return copy;
         });
       }
@@ -488,7 +518,7 @@ export default function LiveInterviewPage() {
             disabled={currentQuestion === totalQuestions}
             onClick={handleNextQuestion}
           >
-            Next
+            Next{" "}
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

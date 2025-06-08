@@ -5,11 +5,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  // 난이도 타입 정의
+  type Difficulty = "easy" | "medium" | "hard";
+
   // 프론트엔드에서 전달받은 값
-  const { language = "Python", stack = "", difficulty = "easy" } = req.body;
+  const { language = "Python", stack = "", difficulty = "easy" } = req.body as {
+    language?: string;
+    stack?: string;
+    difficulty?: Difficulty;
+  };
 
   // 난이도별 설명
-  const difficultyGuide = {
+  const difficultyGuide: Record<Difficulty, string> = {
     easy: "Focus on basic theory and simple coding.",
     medium: "Include deeper theoretical concepts and intermediate coding challenges.",
     hard: "Focus on advanced coding problems that require complex logic or algorithms.",
@@ -48,5 +55,11 @@ Guidelines:
   });
 
   const data = await response.json();
-  res.status(200).json({ problem: data.choices[0].message.content });
+  const problemContent = data.choices[0].message.content;
+
+  // 문제 유형 추출 (theory 또는 coding)
+  const typeMatch = problemContent.match(/"(theory|coding)"/);
+  const problemType = typeMatch ? typeMatch[1] : "coding"; // 기본값은 "coding"
+
+  res.status(200).json({ problem: problemContent, type: problemType });
 }
