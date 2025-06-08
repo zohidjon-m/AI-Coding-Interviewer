@@ -49,6 +49,7 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
+<<<<<<< HEAD
     --background: 220 40% 22%;      /* 더 푸르고 밝은 남색 */
     --foreground: 220 30% 92%;      /* 밝은 푸른 회색 */
     --card: 220 35% 18%;            /* 푸른빛이 도는 카드 */
@@ -81,6 +82,41 @@ body {
     --sidebar-accent-foreground: 220 30% 95%;
     --sidebar-border: 220 25% 30%;
     --sidebar-ring: 217 91% 68%;
+=======
+    /* Lighter dark mode colors */
+    --background: 220 40% 26%; /* Lighter background */
+    --foreground: 220 30% 95%; /* Brighter text */
+    --card: 220 35% 22%; /* Lighter card background */
+    --card-foreground: 220 30% 98%;
+    --popover: 220 40% 24%;
+    --popover-foreground: 220 30% 95%;
+    --primary: 217 91% 72%; /* Brighter primary blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 25% 34%; /* Lighter secondary color */
+    --secondary-foreground: 220 30% 98%;
+    --muted: 220 20% 32%;
+    --muted-foreground: 220 15% 75%;
+    --accent: 217 91% 72%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 25% 34%;
+    --input: 220 25% 34%;
+    --ring: 217 91% 72%;
+    --chart-1: 217 91% 72%;
+    --chart-2: 200 80% 75%;
+    --chart-3: 160 60% 60%;
+    --chart-4: 280 65% 75%;
+    --chart-5: 340 75% 70%;
+    --sidebar-background: 220 40% 24%;
+    --sidebar-foreground: 220 30% 95%;
+    --sidebar-primary: 217 91% 72%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 34%;
+    --sidebar-accent-foreground: 220 30% 98%;
+    --sidebar-border: 220 25% 34%;
+    --sidebar-ring: 217 91% 72%;
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
   }
 }
 

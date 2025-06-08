@@ -1,14 +1,48 @@
+<<<<<<< HEAD
+=======
+"use client"
+
+import { useState } from "react"
+>>>>>>> nicholas-dev
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+<<<<<<< HEAD
 import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3, Code } from "lucide-react"
+=======
+import {
+  Play,
+  Clock,
+  TrendingUp,
+  Target,
+  BookOpen,
+  Award,
+  BarChart3,
+  Code,
+  LayoutTemplate,
+  Database,
+  Check,
+} from "lucide-react"
+>>>>>>> nicholas-dev
 import Link from "next/link"
 import { AuthGuard } from "@/components/auth-guard"
 import { UserNav } from "@/components/user-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
+<<<<<<< HEAD
 
 function DashboardContent() {
+=======
+import { cn } from "@/lib/utils"
+
+type DifficultyLevel = "beginner" | "intermediate" | "advanced"
+type TechStack = "java-backend" | "frontend" | "database"
+
+function DashboardContent() {
+  const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel | null>(null)
+  const [selectedStack, setSelectedStack] = useState<TechStack | null>(null)
+
+>>>>>>> nicholas-dev
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -78,85 +112,203 @@ function DashboardContent() {
               </Card>
             </div>
 
-            {/* Upcoming Interviews */}
+            {/* Level & Stack Selection */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Upcoming Practice Sessions
+                  <Target className="h-5 w-5" />
+                  Practice Level Selection
                 </CardTitle>
-                <CardDescription>Your scheduled interview practice sessions</CardDescription>
+                <CardDescription>Choose your difficulty level and technology stack</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <h4 className="font-medium">Algorithm & Data Structures</h4>
-                      <p className="text-sm text-muted-foreground">Medium difficulty • 45 minutes</p>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">Arrays</Badge>
-                        <Badge variant="secondary">Dynamic Programming</Badge>
+                <div className="space-y-6">
+                  {/* Difficulty Level Selection */}
+                  <div>
+                    <h4 className="font-medium mb-3">Difficulty Level</h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedLevel === "beginner"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedLevel("beginner")}
+                      >
+                        {selectedLevel === "beginner" && (
+                          <div className="absolute top-2 right-2">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-center mb-2">
+                          <Badge
+                            variant="outline"
+                            className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
+                          >
+                            Beginner
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-center text-muted-foreground">Fundamentals & basic concepts</p>
+                      </div>
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedLevel === "intermediate"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedLevel("intermediate")}
+                      >
+                        {selectedLevel === "intermediate" && (
+                          <div className="absolute top-2 right-2">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-center mb-2">
+                          <Badge
+                            variant="outline"
+                            className="bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
+                          >
+                            Intermediate
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-center text-muted-foreground">Advanced topics & patterns</p>
+                      </div>
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedLevel === "advanced"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedLevel("advanced")}
+                      >
+                        {selectedLevel === "advanced" && (
+                          <div className="absolute top-2 right-2">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-center mb-2">
+                          <Badge
+                            variant="outline"
+                            className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
+                          >
+                            Advanced
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-center text-muted-foreground">Complex problems & system design</p>
                       </div>
                     </div>
-                    <div className="text-right space-y-2">
-                      <p className="text-sm text-muted-foreground">Today, 2:00 PM</p>
-                      <Button size="sm" asChild>
-                        <Link href="/interview">Start Now</Link>
-                      </Button>
-                    </div>
                   </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <h4 className="font-medium">System Design Basics</h4>
-                      <p className="text-sm text-muted-foreground">Hard difficulty • 60 minutes</p>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">Scalability</Badge>
-                        <Badge variant="secondary">Architecture</Badge>
+
+                  {/* Technology Stack Selection */}
+                  <div>
+                    <h4 className="font-medium mb-3">Technology Stack</h4>
+                    <div className="space-y-3">
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedStack === "java-backend"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedStack("java-backend")}
+                      >
+                        {selectedStack === "java-backend" && (
+                          <div className="absolute top-4 right-4">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                            <Code className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium">Java Backend</h5>
+                            <p className="text-xs text-muted-foreground">Spring Boot, REST, JPA</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedStack === "frontend"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedStack("frontend")}
+                      >
+                        {selectedStack === "frontend" && (
+                          <div className="absolute top-4 right-4">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                            <LayoutTemplate className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium">Frontend</h5>
+                            <p className="text-xs text-muted-foreground">React, HTML/CSS/JS</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className={cn(
+                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
+                          selectedStack === "database"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                        )}
+                        onClick={() => setSelectedStack("database")}
+                      >
+                        {selectedStack === "database" && (
+                          <div className="absolute top-4 right-4">
+                            <Check className="h-4 w-4 text-blue-600" />
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <Database className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium">Database</h5>
+                            <p className="text-xs text-muted-foreground">SQL/NoSQL design and queries</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right space-y-2">
-                      <p className="text-sm text-muted-foreground">Tomorrow, 10:00 AM</p>
-                      <Button size="sm" variant="outline">
-                        Schedule
-                      </Button>
-                    </div>
                   </div>
+
+                  <Button className="w-full" asChild disabled={!selectedLevel || !selectedStack}>
+                    <Link href="/interview">
+                      <Play className="mr-2 h-4 w-4" />
+                      Start Practice Session
+                      {selectedLevel && selectedStack && (
+                        <span className="ml-2 text-xs opacity-75">
+                          ({selectedLevel} • {selectedStack.replace("-", " ")})
+                        </span>
+                      )}
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Recent Activity */}
+            {/* Mock Interview */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Recent Activity
-                </CardTitle>
-                <CardDescription>Your latest practice sessions and achievements</CardDescription>
+                <CardTitle>Mock Interview</CardTitle>
+                <CardDescription>Jump into practice sessions</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                      <Award className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium">Completed: Two Sum Problem</h4>
-                      <p className="text-sm text-muted-foreground">Score: 85% • Time: 12 minutes</p>
-                    </div>
-                    <Badge variant="outline">2 hours ago</Badge>
-                  </div>
-                  <div className="flex items-center gap-4 p-4 border rounded-lg">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                      <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium">Started: Binary Tree Traversal</h4>
-                      <p className="text-sm text-muted-foreground">In progress • 8 minutes elapsed</p>
-                    </div>
-                    <Badge variant="outline">1 day ago</Badge>
-                  </div>
-                </div>
+                <Button className="w-full justify-start" asChild>
+                  <Link href="/interview">
+                    <Play className="mr-2 h-4 w-4" />
+                    Start Mock Interview
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -194,31 +346,50 @@ function DashboardContent() {
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
+            {/* Recent Activity */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Start</CardTitle>
-                <CardDescription>Jump into practice sessions</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    <CardTitle>Recent Activity</CardTitle>
+                  </div>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/history">
+                      <BarChart3 className="mr-2 h-3 w-3" />
+                      View History
+                    </Link>
+                  </Button>
+                </div>
+                <CardDescription>Your latest practice sessions</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full justify-start" asChild>
-                  <Link href="/interview/random">
-                    <Play className="mr-2 h-4 w-4" />
-                    Random Problem
-                  </Link>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/app/interview/mock">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Mock Interview
-                  </Link>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/app/history">
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    View History
-                  </Link>
-                </Button>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                      <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm">Two Sum Problem</h4>
+                      <p className="text-xs text-muted-foreground">Score: 85% • 12 min</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      2h
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                      <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm">Binary Tree Traversal</h4>
+                      <p className="text-xs text-muted-foreground">In progress • 8 min</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      1d
+                    </Badge>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

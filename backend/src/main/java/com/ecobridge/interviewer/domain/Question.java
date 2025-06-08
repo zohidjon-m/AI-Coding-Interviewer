@@ -42,5 +42,5 @@ public class Question extends Auditable {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers = new ArrayList<>();
 
-    public enum QuestionType { CODING, SYSTEM_DESIGN, MULTIPLE_CHOICE }
+    public enum QuestionType { CODING, SYSTEM_DESIGN, OPEN }
 }

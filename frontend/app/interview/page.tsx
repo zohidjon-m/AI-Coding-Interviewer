@@ -43,10 +43,14 @@ export default function LiveInterviewPage() {
   const selectedStack = searchParams.get("stack") || "";
   const selectedLanguage = searchParams.get("language") || "Python";
 
+<<<<<<< HEAD
   // 문제 상태를 아래처럼 선언
   const [problems, setProblems] = useState<{ problem: string; type: "theory" | "coding" }[]>([
     { problem: "Loading problem...", type: "coding" }
   ]);
+=======
+  const [problems, setProblems] = useState<string[]>(["Loading problem..."]);
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
   const [codes, setCodes] = useState<string[]>(["# Write your solution here"]);
   const [outputs, setOutputs] = useState<string[]>([""]);
   const [chats, setChats] = useState<any[][]>([[
@@ -88,6 +92,7 @@ export default function LiveInterviewPage() {
   // 문제 생성 요청
   useEffect(() => {
     const fetchProblem = async () => {
+<<<<<<< HEAD
       const res = await fetch("/api/problem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,6 +112,19 @@ export default function LiveInterviewPage() {
   const code = codes[currentQuestion - 1];
   const output = outputs[currentQuestion - 1];
   const chatMessages = chats[currentQuestion - 1] || [];
+=======
+      const res = await fetch("/api/problem", { method: "POST" });
+      const data = await res.json();
+      setProblems([data.problem]);
+    };
+    fetchProblem();
+  }, []);
+
+  const problem = problems[currentQuestion - 1];
+  const code = codes[currentQuestion - 1];
+  const output = outputs[currentQuestion - 1];
+  const chatMessages = chats[currentQuestion - 1];
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -136,6 +154,7 @@ export default function LiveInterviewPage() {
     }
   }
 
+<<<<<<< HEAD
   const languageIdMap: Record<string, number> = {
     Python: 71,
     JavaScript: 63,
@@ -143,6 +162,8 @@ export default function LiveInterviewPage() {
     // 필요시 추가
   };
 
+=======
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
   const handleRunCode = async () => {
     setOutputs((prev) => {
       const newOutputs = [...prev];
@@ -154,10 +175,14 @@ export default function LiveInterviewPage() {
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+<<<<<<< HEAD
         body: JSON.stringify({
           code,
           languageId: languageIdMap[selectedLanguage] || 71,
         }),
+=======
+        body: JSON.stringify({ code }),
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
       });
       const data = await res.json();
       setOutputs((prev) => {
@@ -223,6 +248,7 @@ export default function LiveInterviewPage() {
       const nextIdx = currentQuestion;
       // 다음 문제가 없으면 새로 생성
       if (!problems[nextIdx]) {
+<<<<<<< HEAD
         // 문제 받아오기
         const res = await fetch("/api/problem", {
           method: "POST",
@@ -267,6 +293,31 @@ export default function LiveInterviewPage() {
                 (new Date().getHours() < 12 ? "AM" : "PM"),
             },
           ];
+=======
+        setProblems((prev) => [...prev, "Loading problem..."]);
+        setCodes((prev) => [...prev, "# Write your solution here"]);
+        setOutputs((prev) => [...prev, ""]);
+        setChats((prev) => [
+          ...prev,
+          [{
+            id: 1,
+            sender: "ai",
+            message: "Hello! I'm your AI interviewer. Let's start with the next problem.\n\n",
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }).replace("오전", "").replace("오후", "").trim() + " " +
+              (new Date().getHours() < 12 ? "AM" : "PM"),
+          }]
+        ]);
+        // 문제 받아오기
+        const res = await fetch("/api/problem", { method: "POST" });
+        const data = await res.json();
+        setProblems((prev) => {
+          const copy = [...prev];
+          copy[nextIdx] = data.problem;
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
           return copy;
         });
       }
@@ -518,7 +569,11 @@ export default function LiveInterviewPage() {
             disabled={currentQuestion === totalQuestions}
             onClick={handleNextQuestion}
           >
+<<<<<<< HEAD
             Next{" "}
+=======
+            Next
+>>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
         </div>

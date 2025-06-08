@@ -36,22 +36,16 @@ export default function LandingPage() {
             How It Works
           </Link>
           <Link
-            href="/pricing"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Pricing
-          </Link>
-          <Link
             href="/demo"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Demo
           </Link>
           <Link
-            href="/docs"
+            href="/pricing"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Docs
+            Pricing
           </Link>
           <ThemeToggle />
           <UserNav />
@@ -59,12 +53,12 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-br from-background to-muted">
+        {/* Hero Section - Reduced spacing */}
+        <section className="w-full py-8 md:py-16 lg:py-24 bg-gradient-to-br from-background to-muted">
           <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px] items-center">
-              <div className="flex flex-col justify-center space-y-6">
-                <div className="space-y-4">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-3">
                   <Badge variant="secondary" className="w-fit">
                     <Zap className="w-3 h-3 mr-1" />
                     AI-Powered Interviews
@@ -105,7 +99,7 @@ export default function LandingPage() {
 
               {/* Interactive Demo Visualization */}
               <div className="mx-auto aspect-video overflow-hidden rounded-xl border bg-card shadow-2xl lg:order-last relative">
-                <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col">
+                <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 flex flex-col">
                   {/* Mock Terminal Header */}
                   <div className="flex items-center gap-2 p-3 border-b border-slate-700 dark:border-slate-600">
                     <div className="flex gap-1.5">
@@ -164,7 +158,7 @@ export default function LandingPage() {
                   </div>
 
                   {/* Mock AI Response */}
-                  <div className="border-t border-slate-700 dark:border-slate-600 p-3 bg-slate-800 dark:bg-slate-900">
+                  <div className="border-t border-slate-700 dark:border-slate-600 p-3 bg-slate-800 dark:bg-slate-700">
                     <div className="flex items-center gap-2">
                       <Brain className="w-4 h-4 text-blue-400 dark:text-blue-300" />
                       <span className="text-green-400 dark:text-green-300 text-sm">AI:</span>
@@ -188,33 +182,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section className="w-full py-12 bg-background border-b">
+        {/* Features Section - Reduced spacing */}
+        <section className="w-full py-8 md:py-16 lg:py-24 bg-muted/50">
           <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
-            <div className="text-center space-y-8">
-              <p className="text-muted-foreground font-medium">Trusted by developers at leading companies</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center opacity-60">
-                <div className="h-8 bg-muted rounded flex items-center justify-center">
-                  <span className="text-muted-foreground font-semibold">Google</span>
-                </div>
-                <div className="h-8 bg-muted rounded flex items-center justify-center">
-                  <span className="text-muted-foreground font-semibold">Microsoft</span>
-                </div>
-                <div className="h-8 bg-muted rounded flex items-center justify-center">
-                  <span className="text-muted-foreground font-semibold">Amazon</span>
-                </div>
-                <div className="h-8 bg-muted rounded flex items-center justify-center">
-                  <span className="text-muted-foreground font-semibold">Meta</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/50">
-          <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
-            <div className="text-center space-y-4 mb-12">
+            <div className="text-center space-y-3 mb-8">
               <Badge variant="secondary" className="w-fit mx-auto">
                 Features
               </Badge>
@@ -226,7 +197,7 @@ export default function LandingPage() {
                 analytics.
               </p>
             </div>
-            <div className="grid gap-8 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-3">
               <Card className="border-0 shadow-sm">
                 <CardHeader>
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
@@ -301,10 +272,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* How It Works */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-background">
+        {/* How It Works - Reduced spacing */}
+        <section className="w-full py-8 md:py-16 lg:py-24 bg-background">
           <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
-            <div className="text-center space-y-4 mb-12">
+            <div className="text-center space-y-3 mb-8">
               <Badge variant="secondary" className="w-fit mx-auto">
                 Process
               </Badge>
@@ -313,8 +284,8 @@ export default function LandingPage() {
                 Get started with AI-powered coding interviews in three simple steps.
               </p>
             </div>
-            <div className="grid gap-12 lg:grid-cols-3">
-              <div className="text-center space-y-4">
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="text-center space-y-3">
                 <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
                   1
                 </div>
@@ -324,7 +295,7 @@ export default function LandingPage() {
                   domains.
                 </p>
               </div>
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-3">
                 <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
                   2
                 </div>
@@ -334,7 +305,7 @@ export default function LandingPage() {
                   your approach.
                 </p>
               </div>
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-3">
                 <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
                   3
                 </div>
@@ -348,10 +319,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="w-full py-16 md:py-24 lg:py-32 bg-blue-600 dark:bg-blue-700">
+        {/* CTA Section - Reduced spacing */}
+        <section className="w-full py-12 md:py-16 lg:py-24 bg-blue-600 dark:bg-blue-700">
           <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
-            <div className="text-center space-y-8">
+            <div className="text-center space-y-6">
               <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-white">
                 Ready to ace your next coding interview?
               </h2>
@@ -380,7 +351,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-6 bg-slate-900 dark:bg-slate-950 text-slate-300 dark:text-slate-400">
+      <footer className="w-full py-6 bg-slate-900 dark:bg-slate-800 text-slate-300 dark:text-slate-400">
         <div className="container px-4 md:px-6 max-w-screen-2xl mx-auto">
           <div className="grid gap-8 lg:grid-cols-4">
             <div className="space-y-4">
@@ -398,19 +369,19 @@ export default function LandingPage() {
                 <Link href="/how-it-works" className="text-sm hover:text-white transition-colors">
                   How It Works
                 </Link>
-                <Link href="/pricing" className="text-sm hover:text-white transition-colors">
-                  Pricing
-                </Link>
                 <Link href="/demo" className="text-sm hover:text-white transition-colors">
                   Demo
+                </Link>
+                <Link href="/pricing" className="text-sm hover:text-white transition-colors">
+                  Pricing
                 </Link>
               </nav>
             </div>
             <div className="space-y-4">
               <h4 className="text-sm font-semibold text-white">Support</h4>
               <nav className="flex flex-col space-y-3">
-                <Link href="/docs" className="text-sm hover:text-white transition-colors">
-                  Documentation
+                <Link href="/how-it-works" className="text-sm hover:text-white transition-colors">
+                  How It Works
                 </Link>
                 <Link href="/help" className="text-sm hover:text-white transition-colors">
                   Help Center

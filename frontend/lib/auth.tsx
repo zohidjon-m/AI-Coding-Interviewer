@@ -19,6 +19,7 @@ interface AuthContextType {
   logout: () => void
   signup: (data: SignupData) => Promise<{ success: boolean; error?: string }>
   loading: boolean
+  updateUser: (userData: Partial<User>) => void
 }
 
 interface SignupData {
@@ -128,11 +129,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const updateUser = (userData: Partial<User>) => {
+    if (!user) return
+
+    const updatedUser = { ...user, ...userData }
+    localStorage.setItem("user_data", JSON.stringify(updatedUser))
+    setUser(updatedUser)
+  }
+
   const logout = () => {
     localStorage.removeItem("auth_token")
     localStorage.removeItem("user_data")
     setUser(null)
   }
 
-  return <AuthContext.Provider value={{ user, login, logout, signup, loading }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, login, logout, signup, loading, updateUser }}>{children}</AuthContext.Provider>
+  )
 }

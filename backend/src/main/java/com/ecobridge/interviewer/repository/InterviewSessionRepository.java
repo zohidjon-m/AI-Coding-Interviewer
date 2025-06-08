@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface InterviewSessionRepository extends JpaRepository<InterviewSession, Long> {
-    List<InterviewSession> findByUserIdOrderByStarteAtDesc(Long userId);
+    List<InterviewSession> findByUserIdOrderByStartedAtDesc(Long userId);
     List<InterviewSession> findByUserIdAndActiveTrue(Long userId);  //resume-in-progress
     long countByStartedAtAfter(Instant since);  // reporting / rate-limits
 }

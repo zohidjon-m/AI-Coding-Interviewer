@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "CodeInterview AI - Master Coding Interviews with AI",
   description: "Practice coding interviews with our AI-powered platform. Get instant feedback and improve your skills.",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
