@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface ScoreRepository extends JpaRepository<Score, Long> {
 
     List<Score> findByAnswerId(Long answerId);              // detail view
-    Optional<Score> findByAnswerIdAndRubric(Long answerId, String rubric);   //rubric-specific
+    Optional<Score> findByAnswerIdAndFeedback(Long answerId, String rubric);   //rubric-specific
 
 }
