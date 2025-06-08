@@ -1,39 +1,16 @@
-<<<<<<< HEAD
-=======
 "use client"
 
-import { useState } from "react"
->>>>>>> nicholas-dev
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-<<<<<<< HEAD
-import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3, Code } from "lucide-react"
-=======
-import {
-  Play,
-  Clock,
-  TrendingUp,
-  Target,
-  BookOpen,
-  Award,
-  BarChart3,
-  Code,
-  LayoutTemplate,
-  Database,
-  Check,
-} from "lucide-react"
->>>>>>> nicholas-dev
+import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3, Code, Check, Database, LayoutTemplate } from "lucide-react"
 import Link from "next/link"
 import { AuthGuard } from "@/components/auth-guard"
 import { UserNav } from "@/components/user-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
-<<<<<<< HEAD
-
-function DashboardContent() {
-=======
 import { cn } from "@/lib/utils"
+import { useState } from "react"
 
 type DifficultyLevel = "beginner" | "intermediate" | "advanced"
 type TechStack = "java-backend" | "frontend" | "database"
@@ -42,7 +19,6 @@ function DashboardContent() {
   const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel | null>(null)
   const [selectedStack, setSelectedStack] = useState<TechStack | null>(null)
 
->>>>>>> nicholas-dev
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -282,7 +258,13 @@ function DashboardContent() {
                   </div>
 
                   <Button className="w-full" asChild disabled={!selectedLevel || !selectedStack}>
-                    <Link href="/interview">
+                    <Link
+                      href={
+                        selectedLevel && selectedStack
+                          ? `/interview?difficulty=${selectedLevel}&stack=${selectedStack}`
+                          : "/interview"
+                      }
+                    >
                       <Play className="mr-2 h-4 w-4" />
                       Start Practice Session
                       {selectedLevel && selectedStack && (
@@ -304,7 +286,7 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <Button className="w-full justify-start" asChild>
-                  <Link href="/interview">
+                  <Link href="/mock-exam">
                     <Play className="mr-2 h-4 w-4" />
                     Start Mock Interview
                   </Link>

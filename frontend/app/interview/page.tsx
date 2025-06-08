@@ -22,11 +22,13 @@ import {
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import dynamic from "next/dynamic"
+import { useTheme } from "next-themes"; // tailwind/daisyUI 등에서 제공
 
 // 동적 import로 SSR 이슈 방지
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
 const MONACO_THEMES = [
+  { label: "Auto (메인 테마와 연동)", value: "auto" },
   { label: "Light", value: "light" },
   { label: "Dark", value: "vs-dark" },
   { label: "High Contrast", value: "hc-black" },
@@ -39,18 +41,14 @@ export default function LiveInterviewPage() {
   const [chatMessage, setChatMessage] = useState("")
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedDifficulty = searchParams.get("difficulty") || "easy";
-  const selectedStack = searchParams.get("stack") || "";
+  const selectedDifficulty = searchParams.get("difficulty") || "beginner";
+  const selectedStack = searchParams.get("stack") || "frontend";
   const selectedLanguage = searchParams.get("language") || "Python";
 
-<<<<<<< HEAD
   // 문제 상태를 아래처럼 선언
-  const [problems, setProblems] = useState<{ problem: string; type: "theory" | "coding" }[]>([
-    { problem: "Loading problem...", type: "coding" }
-  ]);
-=======
-  const [problems, setProblems] = useState<string[]>(["Loading problem..."]);
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
+  const [problems, setProblems] = useState<{ problem: string; type: "theory" | "coding" }[]>(
+    [{ problem: "Loading problem...", type: "coding" }]
+  );
   const [codes, setCodes] = useState<string[]>(["# Write your solution here"]);
   const [outputs, setOutputs] = useState<string[]>([""]);
   const [chats, setChats] = useState<any[][]>([[
@@ -64,6 +62,18 @@ export default function LiveInterviewPage() {
 
   const [editorTheme, setEditorTheme] = useState("light");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const { theme } = useTheme(); // "light" 또는 "dark" 반환
+
+  // theme가 "dark"면 vs-dark, 아니면 light
+  const autoEditorTheme = editorTheme === "auto"
+    ? (theme === "dark" ? "vs-dark" : "light")
+    : editorTheme;
+
+  const [now, setNow] = useState("");
+
+  useEffect(() => {
+    setNow(new Date().toLocaleTimeString());
+  }, []);
 
   useEffect(() => {
     setChats([[
@@ -92,12 +102,11 @@ export default function LiveInterviewPage() {
   // 문제 생성 요청
   useEffect(() => {
     const fetchProblem = async () => {
-<<<<<<< HEAD
       const res = await fetch("/api/problem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          language: selectedLanguage,
+          language: selectedLanguage, // 언어도 필요하다면 같이 넘기세요
           stack: selectedStack,
           difficulty: selectedDifficulty,
         }),
@@ -108,23 +117,48 @@ export default function LiveInterviewPage() {
     fetchProblem();
   }, [selectedLanguage, selectedStack, selectedDifficulty]);
 
-  const { problem, type: problemType } = problems[currentQuestion - 1] || {};
-  const code = codes[currentQuestion - 1];
-  const output = outputs[currentQuestion - 1];
-  const chatMessages = chats[currentQuestion - 1] || [];
-=======
-      const res = await fetch("/api/problem", { method: "POST" });
-      const data = await res.json();
-      setProblems([data.problem]);
+  useEffect(() => {
+    const fetchAllProblems = async () => {
+      const problemsArr = [];
+      for (let i = 0; i < totalQuestions; i++) {
+        const res = await fetch("/api/problem", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: selectedLanguage,
+            stack: selectedStack,
+            difficulty: selectedDifficulty,
+          }),
+        });
+        const data = await res.json();
+        problemsArr.push({ problem: data.problem, type: data.type });
+      }
+      setProblems(problemsArr);
+      setCodes(Array(totalQuestions).fill("# Write your solution here"));
+      setOutputs(Array(totalQuestions).fill(""));
+      setChats(Array(totalQuestions).fill([
+        {
+          id: 1,
+          sender: "ai",
+          message: "Let's start!",
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          }).replace("오전", "").replace("오후", "").trim() +
+            " " +
+            (new Date().getHours() < 12 ? "AM" : "PM"),
+        },
+      ]));
     };
-    fetchProblem();
-  }, []);
+    fetchAllProblems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLanguage, selectedStack, selectedDifficulty]);
 
-  const problem = problems[currentQuestion - 1];
-  const code = codes[currentQuestion - 1];
-  const output = outputs[currentQuestion - 1];
-  const chatMessages = chats[currentQuestion - 1];
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
+  const { problem, type: problemType } = problems[currentQuestion - 1] || {};
+  const code = codes[currentQuestion - 1] || "";
+  const output = outputs[currentQuestion - 1] || "";
+  const chatMessages = chats[currentQuestion - 1] || [];
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -154,7 +188,6 @@ export default function LiveInterviewPage() {
     }
   }
 
-<<<<<<< HEAD
   const languageIdMap: Record<string, number> = {
     Python: 71,
     JavaScript: 63,
@@ -162,41 +195,29 @@ export default function LiveInterviewPage() {
     // 필요시 추가
   };
 
-=======
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
   const handleRunCode = async () => {
-    setOutputs((prev) => {
-      const newOutputs = [...prev];
-      newOutputs[currentQuestion - 1] = "실행 중...";
-      return newOutputs;
-    });
+    const code = codes[currentQuestion - 1] || "";
 
-    try {
-      const res = await fetch("/api/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-<<<<<<< HEAD
-        body: JSON.stringify({
-          code,
-          languageId: languageIdMap[selectedLanguage] || 71,
-        }),
-=======
-        body: JSON.stringify({ code }),
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
-      });
-      const data = await res.json();
-      setOutputs((prev) => {
-        const newOutputs = [...prev];
-        newOutputs[currentQuestion - 1] = data.output ?? "실행 결과를 받아오지 못했습니다.";
-        return newOutputs;
-      });
-    } catch (e) {
-      setOutputs((prev) => {
-        const newOutputs = [...prev];
-        newOutputs[currentQuestion - 1] = "실행 중 오류가 발생했습니다.";
-        return newOutputs;
-      });
+    const res = await fetch("/api/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        stack: selectedStack,
+      }),
+    });
+    const data = await res.json();
+
+    // 에러 detail 콘솔 출력
+    if (data.error) {
+      console.error("Judge0 detail:", data.detail);
     }
+
+    setOutputs((prev) => {
+      const copy = [...prev];
+      copy[currentQuestion - 1] = data.output ?? data.error ?? "실행 결과를 받아오지 못했습니다.";
+      return copy;
+    });
   }
 
   const handleSubmitSolution = async () => {
@@ -246,10 +267,7 @@ export default function LiveInterviewPage() {
   const handleNextQuestion = async () => {
     if (currentQuestion < totalQuestions) {
       const nextIdx = currentQuestion;
-      // 다음 문제가 없으면 새로 생성
       if (!problems[nextIdx]) {
-<<<<<<< HEAD
-        // 문제 받아오기
         const res = await fetch("/api/problem", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -261,7 +279,6 @@ export default function LiveInterviewPage() {
         });
         const data = await res.json();
 
-        // 문제, 코드, 출력, 채팅 모두 안전하게 추가
         setProblems((prev) => {
           const copy = [...prev];
           copy[nextIdx] = { problem: data.problem, type: data.type };
@@ -283,7 +300,7 @@ export default function LiveInterviewPage() {
             {
               id: 1,
               sender: "ai",
-              message: data.problem, // 문제 설명을 첫 메시지로!
+              message: data.problem,
               timestamp: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -293,34 +310,10 @@ export default function LiveInterviewPage() {
                 (new Date().getHours() < 12 ? "AM" : "PM"),
             },
           ];
-=======
-        setProblems((prev) => [...prev, "Loading problem..."]);
-        setCodes((prev) => [...prev, "# Write your solution here"]);
-        setOutputs((prev) => [...prev, ""]);
-        setChats((prev) => [
-          ...prev,
-          [{
-            id: 1,
-            sender: "ai",
-            message: "Hello! I'm your AI interviewer. Let's start with the next problem.\n\n",
-            timestamp: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }).replace("오전", "").replace("오후", "").trim() + " " +
-              (new Date().getHours() < 12 ? "AM" : "PM"),
-          }]
-        ]);
-        // 문제 받아오기
-        const res = await fetch("/api/problem", { method: "POST" });
-        const data = await res.json();
-        setProblems((prev) => {
-          const copy = [...prev];
-          copy[nextIdx] = data.problem;
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
           return copy;
         });
       }
+      // ★ 항상 호출!
       setCurrentQuestion((prev) => prev + 1);
     }
   };
@@ -364,14 +357,17 @@ export default function LiveInterviewPage() {
               Settings
             </Button>
             {themeDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow z-50">
-                <div className="p-2 font-semibold text-sm text-slate-700">에디터 테마 선택</div>
+              <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-[#232e41] border rounded shadow z-50">
+                <div className="p-2 font-semibold text-sm text-slate-800 dark:text-slate-100">에디터 테마 선택</div>
                 {MONACO_THEMES.map((theme) => (
                   <button
                     key={theme.value}
-                    className={`w-full text-left px-4 py-2 text-sm hover:bg-slate-100 ${
-                      editorTheme === theme.value ? "font-bold text-blue-600" : ""
-                    }`}
+                    className={`w-full text-left px-4 py-2 text-sm
+        hover:bg-slate-100 dark:hover:bg-[#26324a]
+        ${editorTheme === theme.value
+          ? "font-bold text-blue-600"
+          : "text-slate-900 dark:text-white"
+        }`}
                     onClick={() => {
                       setEditorTheme(theme.value);
                       setThemeDropdownOpen(false);
@@ -483,15 +479,15 @@ export default function LiveInterviewPage() {
             <div className="flex-1 p-4 flex flex-col">
               <div className="flex-1">
                 <MonacoEditor
-                  height="350px" // 또는 "40vh" 등으로 고정
-                  language="python"
+                  height="400px"
+                  language={selectedLanguage.toLowerCase()}
                   value={code}
                   onChange={(value) => {
                     const newCodes = [...codes];
                     newCodes[currentQuestion - 1] = value ?? "";
                     setCodes(newCodes);
                   }}
-                  theme={editorTheme}
+                  theme={autoEditorTheme} // ← 여기! "vs-dark"는 다크, "vs-light"는 라이트, "hc-black"은 하이콘트라스트
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
@@ -566,14 +562,10 @@ export default function LiveInterviewPage() {
           <Button
             variant="outline"
             size="sm"
-            disabled={currentQuestion === totalQuestions}
+            disabled={currentQuestion >= totalQuestions}
             onClick={handleNextQuestion}
           >
-<<<<<<< HEAD
             Next{" "}
-=======
-            Next
->>>>>>> 69235d1afc9a1da27743c740bd8dccea2b44116b
             <ChevronRight className="h-4 w-4 ml-2" />
           </Button>
         </div>
