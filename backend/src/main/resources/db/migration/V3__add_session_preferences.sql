@@ -7,3 +7,8 @@ ALTER TABLE interview_session
     ADD COLUMN experience     VARCHAR(32)  NOT NULL DEFAULT 'JUNIOR',
     ADD COLUMN difficulty     VARCHAR(16)  NOT NULL DEFAULT 'MEDIUM',
     ADD COLUMN company_tier   VARCHAR(16)  NOT NULL DEFAULT 'STARTUP';
+-- Adds a monotonically-increasing chat/turn counter per session
+ALTER TABLE mcp_context
+    ADD COLUMN turn_counter BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE answer
+    ADD COLUMN metadata jsonb NOT NULL DEFAULT '{}'::jsonb;

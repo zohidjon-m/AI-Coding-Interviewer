@@ -26,8 +26,8 @@ public class InterviewOrchestrationServiceImpl implements InterviewOrchestration
     @Override
     @Transactional
     public PhaseResponseDTO advancePhase(Long sessionId) {
-        Phase current = phaseRepo.findTopBySessionIdOrderByIdDesc(sessionId)
-                .orElseThrow();
+        Phase current = phaseRepo.findTopBySessionIdOrderByIdDesc(sessionId);
+//                .orElseThrow();
         Phase.PhaseType nextType = phaseTransitionService.next(current.getPhaseType());
         if (nextType == null) {
             throw new IllegalStateException("Session already finished");

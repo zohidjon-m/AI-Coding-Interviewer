@@ -1,4 +1,9 @@
 package com.ecobridge.interviewer.service;
 
-public interface RunServive {
+
+import com.ecobridge.interviewer.dto.RunRequestDTO;
+import com.ecobridge.interviewer.dto.RunResultDTO;
+
+public interface RunService {
+    RunResultDTO execute(RunRequestDTO dto);
 }

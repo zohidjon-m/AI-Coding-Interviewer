@@ -30,9 +30,33 @@ public class Phase extends Auditable {
 
     private Instant openedAt;
 
+    @Column(nullable = false)
+    private boolean completed = false;
+
+    // Convenience domain methods (optional)
+    public void markCompleted() {
+        this.completed = true;
+    }
+
+    public boolean isCompleteAfter(Score score) {
+        // customise your rule: e.g. pass mark ≥ 60
+        return score.getValue()>= 60;
+    }
+
     @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     public enum PhaseType { BASELINE, SCENARIO, ARCHITECTURE, DEEP_DIVE }
+
+    // put this inside Phase
+    public static Phase of(InterviewSession session, PhaseType phaseType) {
+        Phase phase = new Phase();
+        phase.session   = session;
+        phase.phaseType = phaseType;
+        phase.openedAt  = Instant.now();   // mark the moment the phase starts
+        // questions list is already initialised via field declaration
+        return phase;
+    }
+
 }
 

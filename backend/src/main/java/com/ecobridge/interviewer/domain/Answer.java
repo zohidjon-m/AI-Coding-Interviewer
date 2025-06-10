@@ -2,10 +2,13 @@ package com.ecobridge.interviewer.domain;
 
 
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
-
+import org.hibernate.annotations.Type;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Getter
@@ -32,4 +35,14 @@ public class Answer extends Auditable{
 
     @OneToOne(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Score score;
+
+    // jsonb  →  Java Map<String,Object>
+    @Type(JsonType.class)   // hibernate-types library
+    @Column(columnDefinition = "jsonb")
+    @Builder.Default
+    private Map<String, Object> metadata = new HashMap<>();
+
+
+
+
 }

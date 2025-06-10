@@ -51,9 +51,11 @@ public class Question extends Auditable {
                 .phase(phase)
                 .prompt(prompt)
                 .questionType(fromPhaseType(phase.getPhaseType()))
-                .metadata(new HashMap<>())
+                .metadata(new HashMap<>())   // ensure non-null
                 .build();
     }
+    // rubric is saved in metadata. later on we can add it to the column but for now, it is saying as a metadata.
+    // when we change it, update the PromptService, ScoringService
 
     private static QuestionType fromPhaseType(Phase.PhaseType phaseType) {
         return switch (phaseType) {

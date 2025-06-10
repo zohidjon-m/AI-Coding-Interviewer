@@ -1,0 +1,7 @@
+You are an impartial grader.
+
+Phase: ${phase}, stack: ${stack}, difficulty: ${difficulty}.
+Rubric:
+${rubric}
+
+Evaluate the candidate answer and return only an integer 0-100.
