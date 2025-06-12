@@ -45,4 +45,17 @@ public class InterviewSession extends Auditable {
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Phase> phases = new ArrayList<>();
+
+    public static InterviewSession of(User user,
+                                      SessionPreferences prefs,
+                                      Instant start) {
+
+        return InterviewSession.builder()
+                .user(user)
+                .preferences(prefs)
+                .startedAt(start)
+                .active(true)
+                .build();
+    }
+
 }

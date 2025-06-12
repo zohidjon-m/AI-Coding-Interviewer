@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface UserService {
     UserResponseDTO register(UserRequestDTO request);
-    UserResponseDTO getById(Long id);
-    List<UserResponseDTO> listAll();
+    UserResponseDTO login(String email, String password);
+
+
 }

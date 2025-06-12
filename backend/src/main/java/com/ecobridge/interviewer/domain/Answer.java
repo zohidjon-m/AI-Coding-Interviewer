@@ -42,7 +42,15 @@ public class Answer extends Auditable{
     @Builder.Default
     private Map<String, Object> metadata = new HashMap<>();
 
-
+    /*  Static factory – preferred creation path                          */
+    /* ------------------------------------------------------------------ */
+    public static Answer of(Question question, String content) {
+        Answer a = new Answer();
+        a.question = question;
+        a.content  = content;
+        a.submittedAt   = Instant.now();
+        return a;
+    }
 
 
 }
