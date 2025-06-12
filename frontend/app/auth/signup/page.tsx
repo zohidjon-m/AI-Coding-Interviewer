@@ -13,6 +13,7 @@ import Link from "next/link"
 import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { AuthGuard } from "@/components/auth-guard"
+import { validateEmail, validatePassword } from "@/lib/auth-utils"
 
 function SignUpPageContent() {
   const [step, setStep] = useState(1)
@@ -26,16 +27,69 @@ function SignUpPageContent() {
     agreeToTerms: false,
     subscribeNewsletter: false,
   })
+  const [validationErrors, setValidationErrors] = useState({
+    email: "",
+    password: "",
+  })
 
   const { signup, loading } = useAuth()
   const router = useRouter()
 
   const handleNext = () => {
+    if (step === 1) {
+      // Validate email
+      const emailValidation = validateEmail(formData.email)
+      if (!emailValidation.isValid) {
+        setValidationErrors({
+          ...validationErrors,
+          email: emailValidation.message || "Invalid email",
+        })
+        return
+      }
+
+      setValidationErrors({
+        ...validationErrors,
+        email: "",
+      })
+    }
+
     if (step < 3) setStep(step + 1)
   }
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1)
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value
+    setFormData({ ...formData, email })
+
+    // Clear validation error when user starts typing again
+    if (validationErrors.email) {
+      setValidationErrors({
+        ...validationErrors,
+        email: "",
+      })
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value
+    setFormData({ ...formData, password })
+
+    // Validate password as user types
+    if (password) {
+      const passwordValidation = validatePassword(password)
+      setValidationErrors({
+        ...validationErrors,
+        password: passwordValidation.isValid ? "" : passwordValidation.message || "",
+      })
+    } else {
+      setValidationErrors({
+        ...validationErrors,
+        password: "",
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,12 +194,13 @@ function SignUpPageContent() {
                         id="email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10"
+                        className={`pl-10 ${validationErrors.email ? "border-red-500" : ""}`}
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={handleEmailChange}
                         required
                       />
                     </div>
+                    {validationErrors.email && <p className="text-sm text-red-500 mt-1">{validationErrors.email}</p>}
                   </div>
                   <Button type="button" onClick={handleNext} className="w-full">
                     Continue
@@ -201,12 +256,15 @@ function SignUpPageContent() {
                         id="password"
                         type="password"
                         placeholder="Create a strong password"
-                        className="pl-10"
+                        className={`pl-10 ${validationErrors.password ? "border-red-500" : ""}`}
                         value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        onChange={handlePasswordChange}
                         required
                       />
                     </div>
+                    {validationErrors.password && (
+                      <p className="text-sm text-red-500 mt-1">{validationErrors.password}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm password</Label>

@@ -103,25 +103,6 @@ export async function registerUser(credentials: RegisterCredentials): Promise<Au
   }
 }
 
-// Check if email is available
-export async function checkEmailAvailability(email: string): Promise<boolean> {
-  try {
-    const response = await fetch("/api/check-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    })
-
-    const data = await response.json()
-    return data.available || false
-  } catch (error) {
-    console.error("Email check error:", error)
-    return false
-  }
-}
-
 // Validate password strength
 export function validatePassword(password: string): { isValid: boolean; message?: string } {
   if (password.length < 6) {
