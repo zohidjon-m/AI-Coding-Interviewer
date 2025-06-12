@@ -14,10 +14,12 @@ import { useState } from "react"
 
 type DifficultyLevel = "beginner" | "intermediate" | "advanced"
 type TechStack = "java-backend" | "frontend" | "database"
+type CompanyTier = "startup" | "mid" | "bigtech"
 
 function DashboardContent() {
   const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel | null>(null)
   const [selectedStack, setSelectedStack] = useState<TechStack | null>(null)
+  const [selectedCompanyTier, setSelectedCompanyTier] = useState<CompanyTier | null>(null)
 
   return (
     <div className="min-h-screen bg-background">
@@ -95,7 +97,7 @@ function DashboardContent() {
                   <Target className="h-5 w-5" />
                   Practice Level Selection
                 </CardTitle>
-                <CardDescription>Choose your difficulty level and technology stack</CardDescription>
+                <CardDescription>Choose your difficulty level, technology stack, and company tier</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -178,98 +180,187 @@ function DashboardContent() {
                     </div>
                   </div>
 
-                  {/* Technology Stack Selection */}
-                  <div>
-                    <h4 className="font-medium mb-3">Technology Stack</h4>
-                    <div className="space-y-3">
-                      <div
-                        className={cn(
-                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
-                          selectedStack === "java-backend"
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                        )}
-                        onClick={() => setSelectedStack("java-backend")}
-                      >
-                        {selectedStack === "java-backend" && (
-                          <div className="absolute top-4 right-4">
-                            <Check className="h-4 w-4 text-blue-600" />
+                  {/* Stack & Company Tier 한 줄에 배치 */}
+                  <div className="grid grid-cols-2 gap-8 mb-8 min-h-[220px]">
+                    {/* Technology Stack */}
+                    <div className="flex flex-col h-full">
+                      <h4 className="font-medium mb-3">Technology Stack</h4>
+                      <div className="grid grid-rows-3 gap-3 flex-1">
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
+                            selectedStack === "java-backend"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedStack("java-backend")}
+                        >
+                          {selectedStack === "java-backend" && (
+                            <div className="absolute top-4 right-4">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                              <Code className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium">Java Backend</h5>
+                              <p className="text-xs text-muted-foreground">Spring Boot, REST, JPA</p>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
-                            <Code className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
+                            selectedStack === "frontend"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedStack("frontend")}
+                        >
+                          {selectedStack === "frontend" && (
+                            <div className="absolute top-4 right-4">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                              <LayoutTemplate className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium">Frontend</h5>
+                              <p className="text-xs text-muted-foreground">React, HTML/CSS/JS</p>
+                            </div>
                           </div>
-                          <div>
-                            <h5 className="font-medium">Java Backend</h5>
-                            <p className="text-xs text-muted-foreground">Spring Boot, REST, JPA</p>
+                        </div>
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
+                            selectedStack === "database"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedStack("database")}
+                        >
+                          {selectedStack === "database" && (
+                            <div className="absolute top-4 right-4">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                              <Database className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium">Database</h5>
+                              <p className="text-xs text-muted-foreground">SQL/NoSQL design and queries</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div
-                        className={cn(
-                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
-                          selectedStack === "frontend"
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                        )}
-                        onClick={() => setSelectedStack("frontend")}
-                      >
-                        {selectedStack === "frontend" && (
-                          <div className="absolute top-4 right-4">
-                            <Check className="h-4 w-4 text-blue-600" />
+                    </div>
+                    {/* Company Tier */}
+                    <div className="flex flex-col h-full">
+                      <h4 className="font-medium mb-3">Company Tier</h4>
+                      <div className="grid grid-rows-3 gap-3 flex-1">
+                        {/* Startup */}
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
+                            selectedCompanyTier === "startup"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedCompanyTier("startup")}
+                        >
+                          {selectedCompanyTier === "startup" && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center justify-center mb-2">
+                            <Badge
+                              variant="outline"
+                              className="bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800"
+                            >
+                              Startup
+                            </Badge>
                           </div>
-                        )}
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
-                            <LayoutTemplate className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                          </div>
-                          <div>
-                            <h5 className="font-medium">Frontend</h5>
-                            <p className="text-xs text-muted-foreground">React, HTML/CSS/JS</p>
-                          </div>
+                          <p className="text-xs text-center text-muted-foreground">Small/startup company</p>
                         </div>
-                      </div>
-                      <div
-                        className={cn(
-                          "border rounded-lg p-4 cursor-pointer transition-all duration-200 relative",
-                          selectedStack === "database"
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                            : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                        )}
-                        onClick={() => setSelectedStack("database")}
-                      >
-                        {selectedStack === "database" && (
-                          <div className="absolute top-4 right-4">
-                            <Check className="h-4 w-4 text-blue-600" />
+                        {/* Mid-size */}
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
+                            selectedCompanyTier === "mid"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedCompanyTier("mid")}
+                        >
+                          {selectedCompanyTier === "mid" && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center justify-center mb-2">
+                            <Badge
+                              variant="outline"
+                              className="bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
+                            >
+                              Mid-size
+                            </Badge>
                           </div>
-                        )}
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
-                            <Database className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          <p className="text-xs text-center text-muted-foreground">Mid-size company</p>
+                        </div>
+                        {/* Big Tech */}
+                        <div
+                          className={cn(
+                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
+                            selectedCompanyTier === "bigtech"
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+                          )}
+                          onClick={() => setSelectedCompanyTier("bigtech")}
+                        >
+                          {selectedCompanyTier === "bigtech" && (
+                            <div className="absolute top-2 right-2">
+                              <Check className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                          <div className="flex items-center justify-center mb-2">
+                            <Badge
+                              variant="outline"
+                              className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                            >
+                              Big Tech
+                            </Badge>
                           </div>
-                          <div>
-                            <h5 className="font-medium">Database</h5>
-                            <p className="text-xs text-muted-foreground">SQL/NoSQL design and queries</p>
-                          </div>
+                          <p className="text-xs text-center text-muted-foreground">FAANG, large tech</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <Button className="w-full" asChild disabled={!selectedLevel || !selectedStack}>
+                  {/* 버튼은 선택 영역 아래에! */}
+                  <Button
+                    className="w-full mt-4"
+                    asChild
+                    disabled={!selectedLevel || !selectedStack || !selectedCompanyTier}
+                  >
                     <Link
                       href={
-                        selectedLevel && selectedStack
-                          ? `/interview?difficulty=${selectedLevel}&stack=${selectedStack}`
+                        selectedLevel && selectedStack && selectedCompanyTier
+                          ? `/interview?difficulty=${selectedLevel}&stack=${selectedStack}&company_tier=${selectedCompanyTier}`
                           : "/interview"
                       }
                     >
                       <Play className="mr-2 h-4 w-4" />
                       Start Practice Session
-                      {selectedLevel && selectedStack && (
+                      {selectedLevel && selectedStack && selectedCompanyTier && (
                         <span className="ml-2 text-xs opacity-75">
-                          ({selectedLevel} • {selectedStack.replace("-", " ")})
+                          ({selectedLevel} • {selectedStack.replace("-", " ")} • {selectedCompanyTier})
                         </span>
                       )}
                     </Link>

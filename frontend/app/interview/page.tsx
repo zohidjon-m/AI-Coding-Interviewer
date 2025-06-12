@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -28,37 +28,42 @@ import { useTheme } from "next-themes"; // tailwind/daisyUI 등에서 제공
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
 const MONACO_THEMES = [
-  { label: "Auto (메인 테마와 연동)", value: "auto" },
+  { label: "Auto (Sync with main theme)", value: "auto" },
   { label: "Light", value: "light" },
   { label: "Dark", value: "vs-dark" },
   { label: "High Contrast", value: "hc-black" },
 ];
 
 export default function LiveInterviewPage() {
-  const [timeLeft, setTimeLeft] = useState(45 * 60) // 45 minutes in seconds
-  const [currentQuestion, setCurrentQuestion] = useState(1)
-  const [totalQuestions] = useState(5)
-  const [chatMessage, setChatMessage] = useState("")
+  // --- 상태 선언 ---
+  const [timeLeft, setTimeLeft] = useState(45 * 60);
+  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const [totalQuestions] = useState(5);
+  const [chatMessage, setChatMessage] = useState("");
+const [chats, setChats] = useState<any[]>([
+  {
+    id: 1,
+    sender: "ai",
+    message:
+      "Welcome to your coding interview. Let's begin with a quick baseline question to get started.",
+    timestamp: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).replace("오전", "").replace("오후", "").trim() +
+      " " +
+      (new Date().getHours() < 12 ? "AM" : "PM"),
+  },
+]);
+  const [codes, setCodes] = useState<string[]>([""]);
+  const [outputs, setOutputs] = useState<string[]>([""]);
+  const [problems, setProblems] = useState<any[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedDifficulty = searchParams.get("difficulty") || "beginner";
   const selectedStack = searchParams.get("stack") || "frontend";
   const selectedLanguage = searchParams.get("language") || "Python";
-
-  // 문제 상태를 아래처럼 선언
-  const [problems, setProblems] = useState<{ problem: string; type: "theory" | "coding" }[]>(
-    [{ problem: "Loading problem...", type: "coding" }]
-  );
-  const [codes, setCodes] = useState<string[]>(["# Write your solution here"]);
-  const [outputs, setOutputs] = useState<string[]>([""]);
-  const [chats, setChats] = useState<any[][]>([[
-    {
-      id: 1,
-      sender: "ai",
-      message: "Hello! I'm your AI interviewer. Let's start with the first problem.\n\n",
-      timestamp: "", // 초기값은 빈 문자열
-    }
-  ]]);
+  const selectedCompanyTier = searchParams.get("company_tier") || "startup";
 
   const [editorTheme, setEditorTheme] = useState("light");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
@@ -75,22 +80,6 @@ export default function LiveInterviewPage() {
     setNow(new Date().toLocaleTimeString());
   }, []);
 
-  useEffect(() => {
-    setChats([[
-      {
-        id: 1,
-        sender: "ai",
-        message: "Hello! I'm your AI interviewer. Let's start with the first problem.\n\n",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() + " " +
-          (new Date().getHours() < 12 ? "AM" : "PM"),
-      }
-    ]]);
-  }, []);
-
   // Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {
@@ -99,94 +88,44 @@ export default function LiveInterviewPage() {
     return () => clearInterval(timer)
   }, [])
 
-  // 문제 생성 요청
-  useEffect(() => {
-    const fetchProblem = async () => {
-      const res = await fetch("/api/problem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          language: selectedLanguage, // 언어도 필요하다면 같이 넘기세요
-          stack: selectedStack,
-          difficulty: selectedDifficulty,
-        }),
-      });
-      const data = await res.json();
-      setProblems([{ problem: data.problem, type: data.type }]);
-    };
-    fetchProblem();
-  }, [selectedLanguage, selectedStack, selectedDifficulty]);
+  const handleSendMessage = async () => {
+    if (!chatMessage.trim()) return;
+    const newChats = [
+      ...chats,
+      {
+        id: chats.length + 1,
+        sender: "user",
+        message: chatMessage,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ];
+    setChats(newChats);
+    setChatMessage("");
 
-  useEffect(() => {
-    const fetchAllProblems = async () => {
-      const problemsArr = [];
-      for (let i = 0; i < totalQuestions; i++) {
-        const res = await fetch("/api/problem", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            language: selectedLanguage,
-            stack: selectedStack,
-            difficulty: selectedDifficulty,
-          }),
-        });
-        const data = await res.json();
-        problemsArr.push({ problem: data.problem, type: data.type });
-      }
-      setProblems(problemsArr);
-      setCodes(Array(totalQuestions).fill("# Write your solution here"));
-      setOutputs(Array(totalQuestions).fill(""));
-      setChats(Array(totalQuestions).fill([
-        {
-          id: 1,
-          sender: "ai",
-          message: "Let's start!",
-          timestamp: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }).replace("오전", "").replace("오후", "").trim() +
-            " " +
-            (new Date().getHours() < 12 ? "AM" : "PM"),
-        },
-      ]));
-    };
-    fetchAllProblems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLanguage, selectedStack, selectedDifficulty]);
+    // 사용자가 메시지를 보낼 때만 API 호출
+    const res = await fetch("/api/section", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: newChats,
+        stack: selectedStack,
+        difficulty: selectedDifficulty,
+        language: selectedLanguage,
+        company_tier: selectedCompanyTier, // 추가!
+      }),
+    });
+    const data = await res.json();
 
-  const { problem, type: problemType } = problems[currentQuestion - 1] || {};
-  const code = codes[currentQuestion - 1] || "";
-  const output = outputs[currentQuestion - 1] || "";
-  const chatMessages = chats[currentQuestion - 1] || [];
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, "0")}`
-  }
-
-  const handleSendMessage = () => {
-    if (chatMessage.trim()) {
-      const newChats = [...chats];
-      newChats[currentQuestion - 1] = [
-        ...newChats[currentQuestion - 1],
-        {
-          id: newChats[currentQuestion - 1].length + 1,
-          sender: "user",
-          message: chatMessage,
-          timestamp: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }).replace("오전", "").replace("오후", "").trim() + " " +
-            (new Date().getHours() < 12 ? "AM" : "PM"),
-        },
-      ];
-      setChats(newChats);
-      setChatMessage("");
-    }
-  }
+    setChats((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        sender: "ai",
+        message: data.reply,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ]);
+  };
 
   const languageIdMap: Record<string, number> = {
     Python: 71,
@@ -208,14 +147,31 @@ export default function LiveInterviewPage() {
     });
     const data = await res.json();
 
-    // 에러 detail 콘솔 출력
-    if (data.error) {
-      console.error("Judge0 detail:", data.detail);
+    // Judge0 Rate Limit 처리
+    if (data.error && data.detail?.message === "Too many requests") {
+      setOutputs((prev) => {
+        const copy = [...prev];
+        copy[currentQuestion - 1] = "⚠️ Too many execution requests. Please try again in a moment.";
+        return copy;
+      });
+      return;
     }
 
+    // 기타 에러 처리
+    if (data.error) {
+      setOutputs((prev) => {
+        const copy = [...prev];
+        copy[currentQuestion - 1] = `Error: ${data.detail?.message || data.error}`;
+        return copy;
+      });
+      console.error("Judge0 detail:", data.detail);
+      return;
+    }
+
+    // 정상 결과
     setOutputs((prev) => {
       const copy = [...prev];
-      copy[currentQuestion - 1] = data.output ?? data.error ?? "실행 결과를 받아오지 못했습니다.";
+      copy[currentQuestion - 1] = data.output ?? "No output received.";
       return copy;
     });
   }
@@ -223,43 +179,62 @@ export default function LiveInterviewPage() {
   const handleSubmitSolution = async () => {
     setOutputs((prev) => {
       const newOutputs = [...prev];
-      newOutputs[currentQuestion - 1] = "채점 중...";
+      newOutputs[currentQuestion - 1] = "Grading...";
       return newOutputs;
     });
 
-    // 문제와 코드를 함께 전송
-    const res = await fetch("/api/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        code,
-        problem, // 현재 문제
-      }),
-    });
-    const data = await res.json();
-
-    // 채팅에 AI의 피드백 추가
-    const newChats = [...chats];
-    newChats[currentQuestion - 1] = [
-      ...newChats[currentQuestion - 1],
+    // 코드 제출 메시지를 채팅 맥락에 추가
+    const newChats = [
+      ...chats,
       {
-        id: newChats[currentQuestion - 1].length + 1,
-        sender: "ai",
-        message: data.feedback, // AI의 피드백 메시지
+        id: chats.length + 1,
+        sender: "user",
+        message: `Here is my code for the problem:\n\n${codes[currentQuestion - 1]}`,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
           hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() + " " +
+        }).replace("오전", "").replace("오후", "").trim() +
+          " " +
           (new Date().getHours() < 12 ? "AM" : "PM"),
       },
     ];
     setChats(newChats);
 
-    // 테스트 결과 출력
+    // section API로 채팅 맥락 + 선택 정보 + 문제 정보 전달
+    const res = await fetch("/api/section", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: newChats,
+        stack: selectedStack,
+        difficulty: selectedDifficulty,
+        language: selectedLanguage,
+        company_tier: selectedCompanyTier,
+        problem: problems[currentQuestion - 1]?.problem,
+      }),
+    });
+    const data = await res.json();
+
+    setChats((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        sender: "ai",
+        message: data.reply,
+        timestamp: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }).replace("오전", "").replace("오후", "").trim() +
+          " " +
+          (new Date().getHours() < 12 ? "AM" : "PM"),
+      },
+    ]);
+
     setOutputs((prev) => {
       const newOutputs = [...prev];
-      newOutputs[currentQuestion - 1] = data.testResultText;
+      newOutputs[currentQuestion - 1] = data.testResultText || "";
       return newOutputs;
     });
   }
@@ -296,20 +271,18 @@ export default function LiveInterviewPage() {
         });
         setChats((prev) => {
           const copy = [...prev];
-          copy[nextIdx] = [
-            {
-              id: 1,
-              sender: "ai",
-              message: data.problem,
-              timestamp: new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              }).replace("오전", "").replace("오후", "").trim() +
-                " " +
-                (new Date().getHours() < 12 ? "AM" : "PM"),
-            },
-          ];
+          copy[nextIdx] = {
+            id: 1,
+            sender: "ai",
+            message: data.problem,
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }).replace("오전", "").replace("오후", "").trim() +
+              " " +
+              (new Date().getHours() < 12 ? "AM" : "PM"),
+          };
           return copy;
         });
       }
@@ -324,12 +297,19 @@ export default function LiveInterviewPage() {
     }
   };
 
+  // --- formatTime 함수 추가 ---
+  function formatTime(seconds: number) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
+
   return (
     <div className="h-screen flex flex-col bg-slate-50 dark:bg-[#232e41]">
       {/* Header */}
       <header className="w-full min-h-[52px] flex items-center justify-between border-b bg-white dark:bg-[#181f2a] px-2 lg:px-4 py-2">
         <div className="flex items-center gap-4">
-          {/* 로고, 타이틀, 배지 */}
+          {/* Logo, Title, Badge */}
           <Link href="/" className="flex items-center mr-2">
             <Code className="h-6 w-6 text-blue-600" />
             <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
@@ -343,7 +323,13 @@ export default function LiveInterviewPage() {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Clock className={`h-4 w-4 ${timeLeft < 120 ? "text-red-500" : "text-slate-600"}`} />
-            <span className={`font-mono ${timeLeft < 120 ? "text-red-500" : "text-slate-900"}`}>
+            <span
+              className={`font-mono ${
+                timeLeft < 120
+                  ? "text-red-500"
+                  : "text-slate-900 dark:text-slate-200"
+              }`}
+            >
               {formatTime(timeLeft)}
             </span>
           </div>
@@ -358,7 +344,7 @@ export default function LiveInterviewPage() {
             </Button>
             {themeDropdownOpen && (
               <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-[#232e41] border rounded shadow z-50">
-                <div className="p-2 font-semibold text-sm text-slate-800 dark:text-slate-100">에디터 테마 선택</div>
+                <div className="p-2 font-semibold text-sm text-slate-800 dark:text-slate-100">Select editor theme</div>
                 {MONACO_THEMES.map((theme) => (
                   <button
                     key={theme.value}
@@ -403,25 +389,19 @@ export default function LiveInterviewPage() {
               </h2>
             </div>
 
-            {/* Problem Description */}
-            <div className="p-4 border-b bg-slate-50 dark:bg-[#232e41]">
-              <h3 className="font-medium mb-2">Problem</h3>
-              <p className="text-sm text-slate-600 mb-3 whitespace-pre-line">
-                {problem}
-              </p>
-            </div>
-
             {/* Chat Messages */}
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-4 overflow-y-auto max-h-[calc(100vh-180px)]">
               <div className="space-y-4">
-                {chatMessages?.map((msg) => (
+                {chats.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[80%] rounded-lg p-3 ${
                         msg.sender === "user" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-900"
                       }`}
                     >
-                      <p className="text-sm">{msg.message}</p>
+                      <div className="chat-message" style={{ whiteSpace: "pre-line" }}>
+                        {msg.message}
+                      </div>
                       <p className={`text-xs mt-1 ${msg.sender === "user" ? "text-blue-100" : "text-slate-500"}`}>
                         {msg.timestamp}
                       </p>
@@ -459,7 +439,7 @@ export default function LiveInterviewPage() {
           </div>
 
           {/* Code Editor Panel */}
-          <div className="w-1/2 bg-white dark:bg-[#181f2a] flex flex-col">
+          <div className="w-1/2 bg-white dark:bg-[#181f2a] flex flex-col overflow-y-auto max-h-[calc(100vh-52px)]">
             <div className="p-4 border-b flex items-center justify-between">
               <h2 className="font-semibold flex items-center gap-2">
                 <Code className="h-4 w-4" />
@@ -481,13 +461,13 @@ export default function LiveInterviewPage() {
                 <MonacoEditor
                   height="400px"
                   language={selectedLanguage.toLowerCase()}
-                  value={code}
+                  value={codes[currentQuestion - 1] || ""}
                   onChange={(value) => {
                     const newCodes = [...codes];
                     newCodes[currentQuestion - 1] = value ?? "";
                     setCodes(newCodes);
                   }}
-                  theme={autoEditorTheme} // ← 여기! "vs-dark"는 다크, "vs-light"는 라이트, "hc-black"은 하이콘트라스트
+                  theme={autoEditorTheme}
                   options={{
                     fontSize: 14,
                     minimap: { enabled: false },
@@ -501,7 +481,7 @@ export default function LiveInterviewPage() {
               {/* Output 영역 */}
               <div className="mt-4 bg-slate-100 dark:bg-[#232e41] rounded p-3 font-mono text-sm min-h-[60px] whitespace-pre-wrap">
                 Output:
-                {output ? output : "실행 결과가 여기에 표시됩니다."}
+                {outputs[currentQuestion - 1] ? outputs[currentQuestion - 1] : "The result will be displayed here."}
               </div>
             </div>
 
