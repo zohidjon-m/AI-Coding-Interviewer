@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Make request to backend API
-    const response = await fetch(`${process.env.BACKEND_URL || "http://localhost:8081"}/api/auth/register`, {
+    const response = await fetch("http://localhost:8000/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,6 +89,8 @@ export async function POST(request: NextRequest) {
         errorMessage = "An account with this email already exists"
       } else if (response.status === 400) {
         errorMessage = data.message || "Invalid registration data"
+      } else if (response.status === 422) {
+        errorMessage = "Please check your input data"
       } else if (response.status === 500) {
         errorMessage = "Server error. Please try again later"
       } else {

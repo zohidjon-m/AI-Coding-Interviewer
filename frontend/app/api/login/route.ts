@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Make request to backend API
-    const response = await fetch(`${process.env.BACKEND_URL || "http://localhost:8081"}/api/auth/login`, {
+    const response = await fetch("http://localhost:8000/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,10 +40,25 @@ export async function POST(request: NextRequest) {
 
     // Handle unsuccessful login
     if (!response.ok) {
+      let errorMessage = "Invalid credentials"
+
+      // Handle specific error cases
+      if (response.status === 401) {
+        errorMessage = "Invalid email or password"
+      } else if (response.status === 404) {
+        errorMessage = "Account not found"
+      } else if (response.status === 429) {
+        errorMessage = "Too many login attempts. Please try again later"
+      } else if (response.status === 500) {
+        errorMessage = "Server error. Please try again later"
+      } else {
+        errorMessage = data.message || errorMessage
+      }
+
       return NextResponse.json(
         {
           success: false,
-          message: data.message || "Invalid credentials",
+          message: errorMessage,
         },
         { status: response.status },
       )
@@ -71,6 +86,15 @@ export async function POST(request: NextRequest) {
     return responseObj
   } catch (error) {
     console.error("Login error:", error)
+
+    // Handle network errors
+    if (error instanceof TypeError && error.message.includes("fetch")) {
+      return NextResponse.json(
+        { success: false, message: "Unable to connect to server. Please try again later." },
+        { status: 503 },
+      )
+    }
+
     return NextResponse.json({ success: false, message: "An error occurred during login" }, { status: 500 })
   }
 }
