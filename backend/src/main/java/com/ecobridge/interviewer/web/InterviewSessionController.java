@@ -34,11 +34,11 @@ class InterviewSessionController {
     public PhaseResponseDTO nextPhase(@PathVariable Long id) {
         return orchestrationService.advancePhase(id);
     }
-
-    @PostMapping("/{id}baseline-question")
-    public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {
-
-    }
+//
+//    @PostMapping("/{id}baseline-question")
+//    public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {
+//
+//    }
     // ─────────────── Answers ───────────────
     @PostMapping("/answers")
     public AnswerResponseDTO submit(@RequestBody @Valid AnswerRequestDTO dto) {

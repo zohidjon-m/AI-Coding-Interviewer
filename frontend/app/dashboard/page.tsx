@@ -197,7 +197,6 @@ function DashboardContent() {
             CompanyTier: selectedCompanyTier,
           },
         }),
-        credentials: "include",
       });
 
       if (!res.ok) {
