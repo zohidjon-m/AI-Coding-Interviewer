@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           // Call our login API route
-          const response = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/login`, {
+          const response = await fetch("http://localhost:8000/api/v1/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: data.user.id.toString(),
             email: data.user.email,
-            name: data.user.fullName,
+            name: data.user.fullName || data.user.name, // 둘 중 하나로 맞추세요
             role: data.user.role,
             token: data.token,
           }
@@ -61,13 +61,14 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      // Add user info to the session
+      // session.user가 undefined일 수 있으니 체크
       if (token && session.user) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.role = token.role as string
-        session.accessToken = token.accessToken as string
+        // 타입 단언으로 확장
+        ;(session.user as any).id = token.id as string
+        ;(session.user as any).email = token.email as string
+        ;(session.user as any).name = token.name as string
+        ;(session.user as any).role = token.role as string
+        ;(session as any).accessToken = token.accessToken as string
       }
       return session
     },

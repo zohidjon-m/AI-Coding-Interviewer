@@ -51,6 +51,8 @@ export default function LiveInterviewPage() {
   const [output, setOutput] = useState<string>("");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const sessionId = searchParams.get("sessionId");
+  const [session, setSession] = useState<any>(null);
   const selectedStack = searchParams.get("stack") || "frontend";
   const selectedLanguage = searchParams.get("language") || "Python";
   const selectedCompanyTier = searchParams.get("company_tier") || "startup";
@@ -69,6 +71,14 @@ export default function LiveInterviewPage() {
     }, 1000)
     return () => clearInterval(timer)
   }, [])
+
+  // 세션 정보 가져오기
+  useEffect(() => {
+    if (!sessionId) return;
+    fetch(`http://localhost:8000/api/v1/sessions/${sessionId}`)
+      .then(res => res.json())
+      .then(data => setSession(data));
+  }, [sessionId]);
 
   // 채팅 전송
   const handleSendMessage = async () => {
@@ -154,37 +164,41 @@ export default function LiveInterviewPage() {
     ];
     setChats(newChats);
 
-    const res = await fetch("/api/section", {
+    // 1. 답안 제출 API 호출
+    const res = await fetch("http://localhost:8000/api/v1/sessions/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: newChats,
-        stack: selectedStack,
-        company_tier: selectedCompanyTier,
-        language: selectedLanguage,
-        problem: "", // 문제 정보가 필요하면 추가
+        questionId: session?.currentQuestion?.id, // 현재 문제 ID
+        content: code, // 또는 텍스트 답변
       }),
+      credentials: "include",
+    });
+    const answerData = await res.json();
+
+    // 2. (선택) 채점 결과, answerId 등 활용
+    // answerData.answerId, answerData.submittedAt 등
+
+    // 3. (선택) 자동으로 다음 Phase로 이동
+    await handleNextPhase();
+  }
+
+  // 다음 단계로 진행
+  const handleNextPhase = async () => {
+    if (!sessionId) return;
+    const res = await fetch(`http://localhost:8000/api/v1/sessions/${sessionId}/phases/next`, {
+      method: "POST",
+      credentials: "include",
     });
     const data = await res.json();
-
-    setChats((prev) => [
+    // data.question 등으로 다음 문제/상태 반영
+    setSession((prev: any) => ({
       ...prev,
-      {
-        id: prev.length + 1,
-        sender: "ai",
-        message: data.reply,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() +
-          " " +
-          (new Date().getHours() < 12 ? "AM" : "PM"),
-      },
-    ]);
-
-    setOutput(data.testResultText || "");
-  }
+      currentPhase: data.phaseType,
+      currentQuestion: data.question,
+      // ...etc
+    }));
+  };
 
   // --- formatTime 함수 추가 ---
   function formatTime(seconds: number) {

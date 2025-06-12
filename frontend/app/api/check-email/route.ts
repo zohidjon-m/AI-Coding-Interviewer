@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Make request to backend to check email availability
-    const response = await fetch(`${process.env.BACKEND_URL || "http://localhost:8081"}/api/auth/check-email`, {
+    const response = await fetch("http://localhost:8000/api/v1/auth/check-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

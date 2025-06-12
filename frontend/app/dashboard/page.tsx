@@ -177,6 +177,42 @@ function DashboardContent() {
   const [selectedCompanyTier, setSelectedCompanyTier] = useState<CompanyTier | null>(null)
   const router = useRouter();
 
+  const handleStartPractice = async () => {
+    if (!selectedLevel || !selectedStack || !selectedCompanyTier) return;
+
+    // Example: Get candidateId from logged-in user info
+    const userData = JSON.parse(localStorage.getItem("user_data") || "{}");
+    const candidateId = userData.id;
+
+    try {
+      const res = await fetch("http://localhost:8000/api/v1/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          candidateId,
+          preferences: {
+            TechStack: selectedStack,
+            ExperienceLevel: selectedLevel,
+            Difficulty: selectedLevel,
+            CompanyTier: selectedCompanyTier,
+          },
+        }),
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        alert("Failed to create session.");
+        return;
+      }
+
+      const data = await res.json();
+      // Navigate to interview page with session ID
+      router.push(`/interview?sessionId=${data.sessionId}`);
+    } catch (e) {
+      alert("Network error occurred.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -347,13 +383,7 @@ function DashboardContent() {
                   <Button
                     className="w-full"
                     disabled={!selectedLevel || !selectedStack || !selectedCompanyTier}
-                    onClick={() => {
-                      if (selectedLevel && selectedStack && selectedCompanyTier) {
-                        router.push(
-                          `/interview?difficulty=${selectedLevel}&stack=${selectedStack}&company_tier=${selectedCompanyTier}`
-                        );
-                      }
-                    }}
+                    onClick={handleStartPractice}
                   >
                     <Play className="mr-2 h-4 w-4" />
                     Start Practice Session

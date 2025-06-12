@@ -3,10 +3,10 @@ import { type NextRequest, NextResponse } from "next/server"
 // This is a wrapper around the register API for NextAuth compatibility
 export async function POST(request: NextRequest) {
   try {
-    // Forward the request to our register API
+    // Forward the request to your actual backend API
     const body = await request.json()
 
-    const registerResponse = await fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/register`, {
+    const registerResponse = await fetch("http://localhost:8000/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
