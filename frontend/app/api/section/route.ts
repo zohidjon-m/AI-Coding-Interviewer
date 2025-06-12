@@ -36,9 +36,6 @@ export async function POST(req: NextRequest) {
       })),
     ];
 
-    console.log("openaiMessages", JSON.stringify(openaiMessages, null, 2));
-    console.log("OPENAI_API_KEY", process.env.OPENAI_API_KEY ? "OK" : "MISSING");
-    console.log("systemPrompt", systemPrompt.slice(0, 100)); // 앞 100자만
 
     // GPT-4.1 API 호출
     const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
