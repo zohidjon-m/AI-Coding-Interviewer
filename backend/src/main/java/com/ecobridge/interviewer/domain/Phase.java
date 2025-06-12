@@ -40,7 +40,7 @@ public class Phase extends Auditable {
 
     public boolean isCompleteAfter(Score score) {
         // customise your rule: e.g. pass mark ≥ 60
-        return score.getValue()>= 60;
+        return score.getValue()>= 70;
     }
 
     @OneToMany(mappedBy = "phase", cascade = CascadeType.ALL, orphanRemoval = true)

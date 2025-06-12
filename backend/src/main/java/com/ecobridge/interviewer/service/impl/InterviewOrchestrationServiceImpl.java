@@ -1,4 +1,6 @@
 package com.ecobridge.interviewer.service.impl;
+import com.ecobridge.interviewer.dto.QuestionResponseDTO;
+import com.ecobridge.interviewer.mapper.QuestionMapper;
 import com.ecobridge.interviewer.service.*;
 import com.ecobridge.interviewer.domain.*;
 import com.ecobridge.interviewer.dto.PhaseResponseDTO;
@@ -22,12 +24,12 @@ public class InterviewOrchestrationServiceImpl implements InterviewOrchestration
     private final PhaseTransitionService     phaseTransitionService;
     private final McpContextService          mcpContextService;
     private final PhaseMapper                phaseMapper;
+    private final QuestionMapper             questionMapper;
 
     @Override
     @Transactional
     public PhaseResponseDTO advancePhase(Long sessionId) {
         Phase current = phaseRepo.findTopBySessionIdOrderByIdDesc(sessionId);
-//                .orElseThrow();
         Phase.PhaseType nextType = phaseTransitionService.next(current.getPhaseType());
         if (nextType == null) {
             throw new IllegalStateException("Session already finished");
@@ -39,6 +41,18 @@ public class InterviewOrchestrationServiceImpl implements InterviewOrchestration
         mcpContextService.appendContext(session, nextPhase, question);
 
         return phaseMapper.toDto(nextPhase, question);
+    }
+    /* ---------------- baseline‑only generation --------------------------- */
+    @Override @Transactional
+    public QuestionResponseDTO generateBaselineQuestion(Long sessionId) {
+        InterviewSession session = interviewSessionRepo.findById(sessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+
+        // find existing BASELINE phase or create one lazily
+        Phase baseline =phaseRepo.save(Phase.of(session, Phase.PhaseType.BASELINE));
+
+        Question q = promptService.generatePromptAndPersist(baseline);
+        return questionMapper.toDto(q);
     }
 
     @Override
