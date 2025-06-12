@@ -30,7 +30,7 @@ const MONACO_THEMES = [
 ];
 
 export default function LiveInterviewPage() {
-  // 상태
+  // State
   const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<any[]>([
@@ -72,7 +72,7 @@ export default function LiveInterviewPage() {
     return () => clearInterval(timer)
   }, [])
 
-  // 세션 정보 가져오기
+  // Fetch session info
   useEffect(() => {
     if (!sessionId) return;
     fetch(`http://localhost:8000/api/v1/sessions/${sessionId}`)
@@ -80,7 +80,7 @@ export default function LiveInterviewPage() {
       .then(data => setSession(data));
   }, [sessionId]);
 
-  // 채팅 전송
+  // Send chat message
   const handleSendMessage = async () => {
     if (!chatMessage.trim()) return;
     const newChats = [
@@ -118,7 +118,7 @@ export default function LiveInterviewPage() {
     ]);
   };
 
-  // 코드 실행
+  // Run code
   const handleRunCode = async () => {
     const res = await fetch("/api/execute", {
       method: "POST",
@@ -143,7 +143,7 @@ export default function LiveInterviewPage() {
     setOutput(data.output ?? "No output received.");
   }
 
-  // 솔루션 제출
+  // Submit solution (answer)
   const handleSubmitSolution = async () => {
     setOutput("Grading...");
 
@@ -164,26 +164,28 @@ export default function LiveInterviewPage() {
     ];
     setChats(newChats);
 
-    // 1. 답안 제출 API 호출
+    // 1. Submit answer to backend
     const res = await fetch("http://localhost:8000/api/v1/sessions/answers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        questionId: session?.currentQuestion?.id, // 현재 문제 ID
-        content: code, // 또는 텍스트 답변
+        questionId: session?.currentQuestion?.id,
+        content: code,
       }),
       credentials: "include",
     });
     const answerData = await res.json();
 
-    // 2. (선택) 채점 결과, answerId 등 활용
-    // answerData.answerId, answerData.submittedAt 등
+    // 2. (Optional) Use grading result, answerId, etc.
+    if (answerData.score !== undefined) {
+      setOutput(`Score: ${answerData.score}\nFeedback: ${answerData.rubricFeedback || ""}`);
+    }
 
-    // 3. (선택) 자동으로 다음 Phase로 이동
+    // 3. (Optional) Automatically move to next phase
     await handleNextPhase();
   }
 
-  // 다음 단계로 진행
+  // Move to next phase
   const handleNextPhase = async () => {
     if (!sessionId) return;
     const res = await fetch(`http://localhost:8000/api/v1/sessions/${sessionId}/phases/next`, {
@@ -191,7 +193,6 @@ export default function LiveInterviewPage() {
       credentials: "include",
     });
     const data = await res.json();
-    // data.question 등으로 다음 문제/상태 반영
     setSession((prev: any) => ({
       ...prev,
       currentPhase: data.phaseType,
@@ -200,7 +201,22 @@ export default function LiveInterviewPage() {
     }));
   };
 
-  // --- formatTime 함수 추가 ---
+  // (Admin/Proctor) Manual re-score an answer
+  async function handleScoreAnswer(answerId: string) {
+    const res = await fetch("http://localhost:8000/api/v1/sessions/answers/score", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answerId }),
+      credentials: "include",
+    });
+    if (!res.ok) {
+      setOutput("Failed to score the answer.");
+      return;
+    }
+    const data = await res.json();
+    setOutput(`Score: ${data.score}\nFeedback: ${data.rubricFeedback || ""}`);
+  }
+
   function formatTime(seconds: number) {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -353,6 +369,10 @@ export default function LiveInterviewPage() {
                 <Button size="sm" onClick={handleSubmitSolution}>
                   Submit Solution
                 </Button>
+                {/* (Optional) Admin/Proctor scoring button example */}
+                {/* <Button size="sm" variant="outline" onClick={() => handleScoreAnswer("answerId")}>
+                  Manual Score
+                </Button> */}
               </div>
             </div>
 
@@ -374,7 +394,7 @@ export default function LiveInterviewPage() {
                   }}
                 />
               </div>
-              {/* Output 영역 */}
+              {/* Output area */}
               <div className="mt-4 bg-slate-100 dark:bg-[#232e41] rounded p-3 font-mono text-sm min-h-[60px] whitespace-pre-wrap">
                 Output:
                 {output ? output : "The result will be displayed here."}

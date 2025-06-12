@@ -71,10 +71,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
 
-      // Simulate API call - replace with actual authentication
+      // 백엔드 요청 없이 바로 처리
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Mock validation
       if (email === "demo@example.com" && password === "password") {
         const userData: User = {
           id: "1",
@@ -85,7 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           avatar: "/placeholder.svg?height=40&width=40",
         }
 
-        // Store auth data
         localStorage.setItem("auth_token", "mock_token_123")
         localStorage.setItem("user_data", JSON.stringify(userData))
         setUser(userData)
@@ -105,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
 
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
       const userData: User = {
@@ -116,7 +113,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         plan: "free",
       }
 
-      // Store auth data
       localStorage.setItem("auth_token", `token_${userData.id}`)
       localStorage.setItem("user_data", JSON.stringify(userData))
       setUser(userData)
