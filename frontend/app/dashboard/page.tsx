@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Play, Calendar, Clock, TrendingUp, Target, BookOpen, Award, BarChart3, Code, Check, Database, LayoutTemplate } from "lucide-react"
 import Link from "next/link"
@@ -11,15 +10,172 @@ import { UserNav } from "@/components/user-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 type DifficultyLevel = "beginner" | "intermediate" | "advanced"
 type TechStack = "java-backend" | "frontend" | "database"
 type CompanyTier = "startup" | "mid" | "bigtech"
 
+interface Props {
+  selectedStack: TechStack | null
+  setSelectedStack: (v: TechStack | null) => void
+  selectedCompanyTier: CompanyTier | null
+  setSelectedCompanyTier: (v: CompanyTier | null) => void
+}
+
+export function StackAndCompanySelector({
+  selectedStack,
+  setSelectedStack,
+  selectedCompanyTier,
+  setSelectedCompanyTier,
+}: Props) {
+  return (
+    <div className="grid grid-cols-2 gap-8 mb-8 min-h-[220px]">
+      {/* Technology Stack */}
+      <div>
+        <h4 className="font-medium mb-3">Technology Stack</h4>
+        <div className="grid gap-3">
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedStack === "java-backend"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+            )}
+            onClick={() =>
+              setSelectedStack(selectedStack === "java-backend" ? null : "java-backend")
+            }
+          >
+            {selectedStack === "java-backend" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-blue-600" />
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-2">
+              <Code className="h-5 w-5 text-blue-600" />
+              <span className="font-semibold">Java Backend</span>
+            </div>
+            <p className="text-xs text-muted-foreground">Spring Boot, REST, JPA</p>
+          </div>
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedStack === "frontend"
+                ? "border-purple-500 bg-purple-50 dark:bg-purple-950 ring-2 ring-purple-500 ring-opacity-20"
+                : "hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950",
+            )}
+            onClick={() =>
+              setSelectedStack(selectedStack === "frontend" ? null : "frontend")
+            }
+          >
+            {selectedStack === "frontend" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-purple-600" />
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-2">
+              <LayoutTemplate className="h-5 w-5 text-purple-600" />
+              <span className="font-semibold">Frontend</span>
+            </div>
+            <p className="text-xs text-muted-foreground">React, HTML/CSS/JS</p>
+          </div>
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedStack === "database"
+                ? "border-green-500 bg-green-50 dark:bg-green-950 ring-2 ring-green-500 ring-opacity-20"
+                : "hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-950",
+            )}
+            onClick={() =>
+              setSelectedStack(selectedStack === "database" ? null : "database")
+            }
+          >
+            {selectedStack === "database" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-green-600" />
+              </div>
+            )}
+            <div className="flex items-center gap-2 mb-2">
+              <Database className="h-5 w-5 text-green-600" />
+              <span className="font-semibold">Database</span>
+            </div>
+            <p className="text-xs text-muted-foreground">SQL/NoSQL design and queries</p>
+          </div>
+        </div>
+      </div>
+      {/* Company Tier */}
+      <div>
+        <h4 className="font-medium mb-3">Company Tier</h4>
+        <div className="grid gap-3">
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedCompanyTier === "startup"
+                ? "border-pink-500 bg-pink-50 dark:bg-pink-950 ring-2 ring-pink-500 ring-opacity-20"
+                : "hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-950",
+            )}
+            onClick={() =>
+              setSelectedCompanyTier(selectedCompanyTier === "startup" ? null : "startup")
+            }
+          >
+            {selectedCompanyTier === "startup" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-pink-600" />
+              </div>
+            )}
+            <Badge className="bg-pink-500 text-white mb-2">Startup</Badge>
+            <p className="text-xs text-muted-foreground">Small/startup company</p>
+          </div>
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedCompanyTier === "mid"
+                ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950 ring-2 ring-yellow-500 ring-opacity-20"
+                : "hover:border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950",
+            )}
+            onClick={() =>
+              setSelectedCompanyTier(selectedCompanyTier === "mid" ? null : "mid")
+            }
+          >
+            {selectedCompanyTier === "mid" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-yellow-600" />
+              </div>
+            )}
+            <Badge className="bg-yellow-500 text-white mb-2">Mid-size</Badge>
+            <p className="text-xs text-muted-foreground">Mid-size company</p>
+          </div>
+          <div
+            className={cn(
+              "border rounded-lg p-4 cursor-pointer transition-all relative",
+              selectedCompanyTier === "bigtech"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
+                : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
+            )}
+            onClick={() =>
+              setSelectedCompanyTier(selectedCompanyTier === "bigtech" ? null : "bigtech")
+            }
+          >
+            {selectedCompanyTier === "bigtech" && (
+              <div className="absolute top-2 right-2">
+                <Check className="h-4 w-4 text-blue-600" />
+              </div>
+            )}
+            <Badge className="bg-blue-500 text-white mb-2">Big Tech</Badge>
+            <p className="text-xs text-muted-foreground">FAANG, large tech</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function DashboardContent() {
   const [selectedLevel, setSelectedLevel] = useState<DifficultyLevel | null>(null)
   const [selectedStack, setSelectedStack] = useState<TechStack | null>(null)
   const [selectedCompanyTier, setSelectedCompanyTier] = useState<CompanyTier | null>(null)
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,12 +196,6 @@ function DashboardContent() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Button asChild>
-              <Link href="/interview">
-                <Play className="mr-2 h-4 w-4" />
-                Start Practice
-              </Link>
-            </Button>
             <UserNav />
           </div>
         </div>
@@ -95,15 +245,20 @@ function DashboardContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  Practice Level Selection
+                  Practice & Mock Interview
                 </CardTitle>
-                <CardDescription>Choose your difficulty level, technology stack, and company tier</CardDescription>
+                <CardDescription>
+                  Choose your difficulty, technology stack, and company tier. You can start a practice session or a mock interview.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {/* Difficulty Level Selection */}
+                  {/* Difficulty Level */}
                   <div>
-                    <h4 className="font-medium mb-3">Difficulty Level</h4>
+                    <h4 className="font-medium mb-3">
+                      Difficulty Level{" "}
+                      <span className="text-xs text-muted-foreground">(Practice only)</span>
+                    </h4>
                     <div className="grid grid-cols-3 gap-3">
                       <div
                         className={cn(
@@ -112,7 +267,7 @@ function DashboardContent() {
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
                             : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
                         )}
-                        onClick={() => setSelectedLevel("beginner")}
+                        onClick={() => setSelectedLevel(selectedLevel === "beginner" ? null : "beginner")}
                       >
                         {selectedLevel === "beginner" && (
                           <div className="absolute top-2 right-2">
@@ -136,7 +291,7 @@ function DashboardContent() {
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
                             : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
                         )}
-                        onClick={() => setSelectedLevel("intermediate")}
+                        onClick={() => setSelectedLevel(selectedLevel === "intermediate" ? null : "intermediate")}
                       >
                         {selectedLevel === "intermediate" && (
                           <div className="absolute top-2 right-2">
@@ -160,7 +315,7 @@ function DashboardContent() {
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
                             : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
                         )}
-                        onClick={() => setSelectedLevel("advanced")}
+                        onClick={() => setSelectedLevel(selectedLevel === "advanced" ? null : "advanced")}
                       >
                         {selectedLevel === "advanced" && (
                           <div className="absolute top-2 right-2">
@@ -180,208 +335,61 @@ function DashboardContent() {
                     </div>
                   </div>
 
-                  {/* Stack & Company Tier 한 줄에 배치 */}
-                  <div className="grid grid-cols-2 gap-8 mb-8 min-h-[220px]">
-                    {/* Technology Stack */}
-                    <div className="flex flex-col h-full">
-                      <h4 className="font-medium mb-3">Technology Stack</h4>
-                      <div className="grid grid-rows-3 gap-3 flex-1">
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
-                            selectedStack === "java-backend"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedStack("java-backend")}
-                        >
-                          {selectedStack === "java-backend" && (
-                            <div className="absolute top-4 right-4">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
-                              <Code className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div>
-                              <h5 className="font-medium">Java Backend</h5>
-                              <p className="text-xs text-muted-foreground">Spring Boot, REST, JPA</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
-                            selectedStack === "frontend"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedStack("frontend")}
-                        >
-                          {selectedStack === "frontend" && (
-                            <div className="absolute top-4 right-4">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
-                              <LayoutTemplate className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            <div>
-                              <h5 className="font-medium">Frontend</h5>
-                              <p className="text-xs text-muted-foreground">React, HTML/CSS/JS</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative",
-                            selectedStack === "database"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedStack("database")}
-                        >
-                          {selectedStack === "database" && (
-                            <div className="absolute top-4 right-4">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
-                              <Database className="h-4 w-4 text-green-600 dark:text-green-400" />
-                            </div>
-                            <div>
-                              <h5 className="font-medium">Database</h5>
-                              <p className="text-xs text-muted-foreground">SQL/NoSQL design and queries</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Company Tier */}
-                    <div className="flex flex-col h-full">
-                      <h4 className="font-medium mb-3">Company Tier</h4>
-                      <div className="grid grid-rows-3 gap-3 flex-1">
-                        {/* Startup */}
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
-                            selectedCompanyTier === "startup"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedCompanyTier("startup")}
-                        >
-                          {selectedCompanyTier === "startup" && (
-                            <div className="absolute top-2 right-2">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center justify-center mb-2">
-                            <Badge
-                              variant="outline"
-                              className="bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800"
-                            >
-                              Startup
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-center text-muted-foreground">Small/startup company</p>
-                        </div>
-                        {/* Mid-size */}
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
-                            selectedCompanyTier === "mid"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedCompanyTier("mid")}
-                        >
-                          {selectedCompanyTier === "mid" && (
-                            <div className="absolute top-2 right-2">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center justify-center mb-2">
-                            <Badge
-                              variant="outline"
-                              className="bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
-                            >
-                              Mid-size
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-center text-muted-foreground">Mid-size company</p>
-                        </div>
-                        {/* Big Tech */}
-                        <div
-                          className={cn(
-                            "border rounded-lg p-2 cursor-pointer transition-all duration-200 relative flex-1 flex flex-col justify-center",
-                            selectedCompanyTier === "bigtech"
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-950 ring-2 ring-blue-500 ring-opacity-20"
-                              : "hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950",
-                          )}
-                          onClick={() => setSelectedCompanyTier("bigtech")}
-                        >
-                          {selectedCompanyTier === "bigtech" && (
-                            <div className="absolute top-2 right-2">
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <div className="flex items-center justify-center mb-2">
-                            <Badge
-                              variant="outline"
-                              className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
-                            >
-                              Big Tech
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-center text-muted-foreground">FAANG, large tech</p>
-                        </div>
-                      </div>
-                    </div>
+                  {/* Stack & Company Tier Selection */}
+                  <StackAndCompanySelector
+                    selectedStack={selectedStack}
+                    setSelectedStack={setSelectedStack}
+                    selectedCompanyTier={selectedCompanyTier}
+                    setSelectedCompanyTier={setSelectedCompanyTier}
+                  />
+
+                  {/* Practice Button */}
+                  <Button
+                    className="w-full"
+                    disabled={!selectedLevel || !selectedStack || !selectedCompanyTier}
+                    onClick={() => {
+                      if (selectedLevel && selectedStack && selectedCompanyTier) {
+                        router.push(
+                          `/interview?difficulty=${selectedLevel}&stack=${selectedStack}&company_tier=${selectedCompanyTier}`
+                        );
+                      }
+                    }}
+                  >
+                    <Play className="mr-2 h-4 w-4" />
+                    Start Practice Session
+                    <span className="ml-2 text-xs text-muted-foreground">(Difficulty required)</span>
+                  </Button>
+
+                  {/* Divider */}
+                  <div className="flex items-center my-2">
+                    <div className="flex-grow border-t border-muted-foreground/30" />
+                    <span className="mx-3 text-xs text-muted-foreground">or</span>
+                    <div className="flex-grow border-t border-muted-foreground/30" />
                   </div>
 
-                  {/* 버튼은 선택 영역 아래에! */}
+                  {/* Mock Interview Info & Button */}
+                  <div className="rounded-md bg-muted p-3 mb-2">
+                    <p className="text-sm text-muted-foreground">
+                      <b>Mock Interview</b> runs in <span className="text-primary font-semibold">real test mode</span> without difficulty selection.
+                    </p>
+                  </div>
                   <Button
-                    className="w-full mt-4"
-                    asChild
-                    disabled={!selectedLevel || !selectedStack || !selectedCompanyTier}
-                  >
-                    <Link
-                      href={
-                        selectedLevel && selectedStack && selectedCompanyTier
-                          ? `/interview?difficulty=${selectedLevel}&stack=${selectedStack}&company_tier=${selectedCompanyTier}`
-                          : "/interview"
+                    className="w-full"
+                    variant="outline"
+                    disabled={!selectedStack || !selectedCompanyTier}
+                    onClick={() => {
+                      if (selectedStack && selectedCompanyTier) {
+                        router.push(
+                          `/mock-exam?stack=${selectedStack}&company_tier=${selectedCompanyTier}`
+                        );
                       }
-                    >
-                      <Play className="mr-2 h-4 w-4" />
-                      Start Practice Session
-                      {selectedLevel && selectedStack && selectedCompanyTier && (
-                        <span className="ml-2 text-xs opacity-75">
-                          ({selectedLevel} • {selectedStack.replace("-", " ")} • {selectedCompanyTier})
-                        </span>
-                      )}
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Mock Interview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Mock Interview</CardTitle>
-                <CardDescription>Jump into practice sessions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full justify-start" asChild>
-                  <Link href="/mock-exam">
+                    }}
+                  >
                     <Play className="mr-2 h-4 w-4" />
                     Start Mock Interview
-                  </Link>
-                </Button>
+                    <span className="ml-2 text-xs text-muted-foreground">(No difficulty, real mode)</span>
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

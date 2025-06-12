@@ -2,11 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Link } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Play,
@@ -17,14 +14,12 @@ import {
   Settings,
   MessageSquare,
   Code,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import dynamic from "next/dynamic"
-import { useTheme } from "next-themes"; // tailwind/daisyUI 등에서 제공
+import { useTheme } from "next-themes"
+import Link from "next/link";
 
-// 동적 import로 SSR 이슈 방지
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false })
 
 const MONACO_THEMES = [
@@ -35,50 +30,37 @@ const MONACO_THEMES = [
 ];
 
 export default function LiveInterviewPage() {
-  // --- 상태 선언 ---
+  // 상태
   const [timeLeft, setTimeLeft] = useState(45 * 60);
-  const [currentQuestion, setCurrentQuestion] = useState(1);
-  const [totalQuestions] = useState(5);
   const [chatMessage, setChatMessage] = useState("");
-const [chats, setChats] = useState<any[]>([
-  {
-    id: 1,
-    sender: "ai",
-    message:
-      "Welcome to your coding interview. Let's begin with a quick baseline question to get started.",
-    timestamp: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }).replace("오전", "").replace("오후", "").trim() +
-      " " +
-      (new Date().getHours() < 12 ? "AM" : "PM"),
-  },
-]);
-  const [codes, setCodes] = useState<string[]>([""]);
-  const [outputs, setOutputs] = useState<string[]>([""]);
-  const [problems, setProblems] = useState<any[]>([]);
+  const [chats, setChats] = useState<any[]>([
+    {
+      id: 1,
+      sender: "ai",
+      message: "Welcome to your coding interview. Let's begin with a quick baseline question to get started.",
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }).replace("오전", "").replace("오후", "").trim() +
+        " " +
+        (new Date().getHours() < 12 ? "AM" : "PM"),
+    },
+  ]);
+  const [code, setCode] = useState<string>("# Write your solution here");
+  const [output, setOutput] = useState<string>("");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedDifficulty = searchParams.get("difficulty") || "beginner";
   const selectedStack = searchParams.get("stack") || "frontend";
   const selectedLanguage = searchParams.get("language") || "Python";
   const selectedCompanyTier = searchParams.get("company_tier") || "startup";
-
   const [editorTheme, setEditorTheme] = useState("light");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
-  const { theme } = useTheme(); // "light" 또는 "dark" 반환
+  const { theme } = useTheme();
 
-  // theme가 "dark"면 vs-dark, 아니면 light
   const autoEditorTheme = editorTheme === "auto"
     ? (theme === "dark" ? "vs-dark" : "light")
     : editorTheme;
-
-  const [now, setNow] = useState("");
-
-  useEffect(() => {
-    setNow(new Date().toLocaleTimeString());
-  }, []);
 
   // Timer countdown
   useEffect(() => {
@@ -88,6 +70,7 @@ const [chats, setChats] = useState<any[]>([
     return () => clearInterval(timer)
   }, [])
 
+  // 채팅 전송
   const handleSendMessage = async () => {
     if (!chatMessage.trim()) return;
     const newChats = [
@@ -102,16 +85,14 @@ const [chats, setChats] = useState<any[]>([
     setChats(newChats);
     setChatMessage("");
 
-    // 사용자가 메시지를 보낼 때만 API 호출
     const res = await fetch("/api/section", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: newChats,
         stack: selectedStack,
-        difficulty: selectedDifficulty,
+        company_tier: selectedCompanyTier,
         language: selectedLanguage,
-        company_tier: selectedCompanyTier, // 추가!
       }),
     });
     const data = await res.json();
@@ -127,16 +108,8 @@ const [chats, setChats] = useState<any[]>([
     ]);
   };
 
-  const languageIdMap: Record<string, number> = {
-    Python: 71,
-    JavaScript: 63,
-    Java: 62,
-    // 필요시 추가
-  };
-
+  // 코드 실행
   const handleRunCode = async () => {
-    const code = codes[currentQuestion - 1] || "";
-
     const res = await fetch("/api/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -147,49 +120,29 @@ const [chats, setChats] = useState<any[]>([
     });
     const data = await res.json();
 
-    // Judge0 Rate Limit 처리
     if (data.error && data.detail?.message === "Too many requests") {
-      setOutputs((prev) => {
-        const copy = [...prev];
-        copy[currentQuestion - 1] = "⚠️ Too many execution requests. Please try again in a moment.";
-        return copy;
-      });
+      setOutput("⚠️ Too many execution requests. Please try again in a moment.");
       return;
     }
-
-    // 기타 에러 처리
     if (data.error) {
-      setOutputs((prev) => {
-        const copy = [...prev];
-        copy[currentQuestion - 1] = `Error: ${data.detail?.message || data.error}`;
-        return copy;
-      });
+      setOutput(`Error: ${data.detail?.message || data.error}`);
       console.error("Judge0 detail:", data.detail);
       return;
     }
 
-    // 정상 결과
-    setOutputs((prev) => {
-      const copy = [...prev];
-      copy[currentQuestion - 1] = data.output ?? "No output received.";
-      return copy;
-    });
+    setOutput(data.output ?? "No output received.");
   }
 
+  // 솔루션 제출
   const handleSubmitSolution = async () => {
-    setOutputs((prev) => {
-      const newOutputs = [...prev];
-      newOutputs[currentQuestion - 1] = "Grading...";
-      return newOutputs;
-    });
+    setOutput("Grading...");
 
-    // 코드 제출 메시지를 채팅 맥락에 추가
     const newChats = [
       ...chats,
       {
         id: chats.length + 1,
         sender: "user",
-        message: `Here is my code for the problem:\n\n${codes[currentQuestion - 1]}`,
+        message: `Here is my code for the problem:\n\n${code}`,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -201,17 +154,15 @@ const [chats, setChats] = useState<any[]>([
     ];
     setChats(newChats);
 
-    // section API로 채팅 맥락 + 선택 정보 + 문제 정보 전달
     const res = await fetch("/api/section", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: newChats,
         stack: selectedStack,
-        difficulty: selectedDifficulty,
-        language: selectedLanguage,
         company_tier: selectedCompanyTier,
-        problem: problems[currentQuestion - 1]?.problem,
+        language: selectedLanguage,
+        problem: "", // 문제 정보가 필요하면 추가
       }),
     });
     const data = await res.json();
@@ -232,70 +183,8 @@ const [chats, setChats] = useState<any[]>([
       },
     ]);
 
-    setOutputs((prev) => {
-      const newOutputs = [...prev];
-      newOutputs[currentQuestion - 1] = data.testResultText || "";
-      return newOutputs;
-    });
+    setOutput(data.testResultText || "");
   }
-
-  const handleNextQuestion = async () => {
-    if (currentQuestion < totalQuestions) {
-      const nextIdx = currentQuestion;
-      if (!problems[nextIdx]) {
-        const res = await fetch("/api/problem", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            language: selectedLanguage,
-            stack: selectedStack,
-            difficulty: selectedDifficulty,
-          }),
-        });
-        const data = await res.json();
-
-        setProblems((prev) => {
-          const copy = [...prev];
-          copy[nextIdx] = { problem: data.problem, type: data.type };
-          return copy;
-        });
-        setCodes((prev) => {
-          const copy = [...prev];
-          copy[nextIdx] = "# Write your solution here";
-          return copy;
-        });
-        setOutputs((prev) => {
-          const copy = [...prev];
-          copy[nextIdx] = "";
-          return copy;
-        });
-        setChats((prev) => {
-          const copy = [...prev];
-          copy[nextIdx] = {
-            id: 1,
-            sender: "ai",
-            message: data.problem,
-            timestamp: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            }).replace("오전", "").replace("오후", "").trim() +
-              " " +
-              (new Date().getHours() < 12 ? "AM" : "PM"),
-          };
-          return copy;
-        });
-      }
-      // ★ 항상 호출!
-      setCurrentQuestion((prev) => prev + 1);
-    }
-  };
-
-  const handlePreviousQuestion = () => {
-    if (currentQuestion > 1) {
-      setCurrentQuestion((prev) => prev - 1);
-    }
-  };
 
   // --- formatTime 함수 추가 ---
   function formatTime(seconds: number) {
@@ -309,15 +198,12 @@ const [chats, setChats] = useState<any[]>([
       {/* Header */}
       <header className="w-full min-h-[52px] flex items-center justify-between border-b bg-white dark:bg-[#181f2a] px-2 lg:px-4 py-2">
         <div className="flex items-center gap-4">
-          {/* Logo, Title, Badge */}
+          {/* Logo, Title */}
           <Link href="/" className="flex items-center mr-2">
             <Code className="h-6 w-6 text-blue-600" />
             <span className="ml-2 text-xl font-bold text-foreground">CodeInterview AI</span>
           </Link>
           <h1 className="text-lg font-semibold">Live Interview</h1>
-          <Badge variant="outline">
-            Question {currentQuestion}/{totalQuestions}
-          </Badge>
         </div>
 
         <div className="flex items-center gap-4">
@@ -461,12 +347,8 @@ const [chats, setChats] = useState<any[]>([
                 <MonacoEditor
                   height="400px"
                   language={selectedLanguage.toLowerCase()}
-                  value={codes[currentQuestion - 1] || ""}
-                  onChange={(value) => {
-                    const newCodes = [...codes];
-                    newCodes[currentQuestion - 1] = value ?? "";
-                    setCodes(newCodes);
-                  }}
+                  value={code}
+                  onChange={(value) => setCode(value ?? "")}
                   theme={autoEditorTheme}
                   options={{
                     fontSize: 14,
@@ -481,26 +363,7 @@ const [chats, setChats] = useState<any[]>([
               {/* Output 영역 */}
               <div className="mt-4 bg-slate-100 dark:bg-[#232e41] rounded p-3 font-mono text-sm min-h-[60px] whitespace-pre-wrap">
                 Output:
-                {outputs[currentQuestion - 1] ? outputs[currentQuestion - 1] : "The result will be displayed here."}
-              </div>
-            </div>
-
-            {/* Test Results */}
-            <div className="border-t p-4 bg-slate-50 dark:bg-[#232e41]">
-              <h3 className="font-medium mb-2">Test Results</h3>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Test case 1: Passed</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Test case 2: Passed</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span>Test case 3: Running...</span>
-                </div>
+                {output ? output : "The result will be displayed here."}
               </div>
             </div>
           </div>
@@ -529,27 +392,6 @@ const [chats, setChats] = useState<any[]>([
 
       {/* Footer */}
       <footer className="bg-white dark:bg-[#181f2a] border-t px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentQuestion === 1}
-            onClick={handlePreviousQuestion}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentQuestion >= totalQuestions}
-            onClick={handleNextQuestion}
-          >
-            Next{" "}
-            <ChevronRight className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
-
         <div className="text-sm text-slate-600">
           Press <kbd className="bg-slate-100 px-1 rounded">Esc</kbd> for chat,{" "}
           <kbd className="bg-slate-100 px-1 rounded">Ctrl+L</kbd> for editor

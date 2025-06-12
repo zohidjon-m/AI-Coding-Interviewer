@@ -125,5 +125,4 @@ Provide:
 > 1. Greet the candidate.  
 > 2. Echo back detected session preferences.  
 > 3. Ask any missing clarifying questions.  
-> 4. Briefly explain the interview phases and what to expect.  
-> 5. Begin the **BASELINE** phase with Question 1.
+> 4. Begin the **BASELINE** phase with Question 1.
