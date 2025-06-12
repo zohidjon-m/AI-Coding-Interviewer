@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -61,6 +61,8 @@ export default function LiveInterviewPage() {
   const autoEditorTheme = editorTheme === "auto"
     ? (theme === "dark" ? "vs-dark" : "light")
     : editorTheme;
+
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Timer countdown
   useEffect(() => {
@@ -193,6 +195,13 @@ export default function LiveInterviewPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }
 
+  useEffect(() => {
+    // 채팅이 추가될 때마다 맨 아래로 스크롤
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
+
   return (
     <div className="h-screen flex flex-col bg-slate-50 dark:bg-[#232e41]">
       {/* Header */}
@@ -294,6 +303,8 @@ export default function LiveInterviewPage() {
                     </div>
                   </div>
                 ))}
+                {/* 아래에 ref div 추가 */}
+                <div ref={scrollRef} />
               </div>
             </ScrollArea>
 

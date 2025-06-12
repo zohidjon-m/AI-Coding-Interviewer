@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -61,12 +61,20 @@ export default function MockExamPage() {
     ? (theme === "dark" ? "vs-dark" : "light")
     : editorTheme;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
     }, 1000)
     return () => clearInterval(timer)
   }, [])
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chats]);
 
   // 채팅 전송
   const handleSendMessage = async () => {
@@ -286,6 +294,8 @@ export default function MockExamPage() {
                     </div>
                   </div>
                 ))}
+                {/* 아래에 ref div 추가 */}
+                <div ref={scrollRef} />
               </div>
             </ScrollArea>
 
