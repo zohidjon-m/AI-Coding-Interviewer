@@ -29,6 +29,36 @@ const MONACO_THEMES = [
   { label: "High Contrast", value: "hc-black" },
 ];
 
+export async function scoreAnswer(answerId: string) {
+  const res = await fetch("http://localhost:8000/api/v1/sessions/answers/score", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ answerId }),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to score the answer.");
+  }
+  return await res.json();
+}
+
+export async function runCode(language: string, sourceCode: string, stdin: string = "") {
+  const res = await fetch("http://localhost:8000/api/v1/sessions/run", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      language,
+      sourceCode,
+      stdin,
+    }),
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error("Code run failed.");
+  }
+  return await res.json();
+}
+
 export default function LiveInterviewPage() {
   // State
   const [timeLeft, setTimeLeft] = useState(45 * 60);
@@ -200,22 +230,6 @@ export default function LiveInterviewPage() {
       // ...etc
     }));
   };
-
-  // (Admin/Proctor) Manual re-score an answer
-  async function handleScoreAnswer(answerId: string) {
-    const res = await fetch("http://localhost:8000/api/v1/sessions/answers/score", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answerId }),
-      credentials: "include",
-    });
-    if (!res.ok) {
-      setOutput("Failed to score the answer.");
-      return;
-    }
-    const data = await res.json();
-    setOutput(`Score: ${data.score}\nFeedback: ${data.rubricFeedback || ""}`);
-  }
 
   function formatTime(seconds: number) {
     const mins = Math.floor(seconds / 60);
