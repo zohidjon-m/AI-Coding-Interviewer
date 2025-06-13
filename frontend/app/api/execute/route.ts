@@ -4,7 +4,7 @@ const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY;
 
 export async function POST(req: NextRequest) {
   try {
-    const { code, stack = "python" } = await req.json();
+    const { code, language, stack = "python" } = await req.json();
 
     const languageMap: Record<string, number> = {
       // Java Backend
@@ -24,13 +24,12 @@ export async function POST(req: NextRequest) {
       sql: 82,
       postgresql: 11,
       sqlite: 83,
-      mongodb: 47, // MongoDB는 Judge0에서 지원하지 않음(참고)
-      // NoSQL은 대부분 지원하지 않음
 
       // 기타 자주 쓰는 언어
       python: 71,
       c: 50,
       cpp: 54,
+      "c++": 54,
       csharp: 51,
       go: 60,
       ruby: 72,
@@ -40,7 +39,17 @@ export async function POST(req: NextRequest) {
       rust: 73,
       // 필요시 추가
     };
-    const languageId = languageMap[stack.toLowerCase()] || 71;
+
+    // language > stack 우선순위로 언어 결정
+    const langKey = (language || "").toLowerCase();
+    const languageId = languageMap[langKey];
+
+    if (!languageId) {
+      return NextResponse.json(
+        { error: `It is not supported: ${langKey}` },
+        { status: 400 }
+      );
+    }
 
     const submissionRes = await fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true", {
       method: "POST",

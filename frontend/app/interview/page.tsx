@@ -47,14 +47,12 @@ export default function LiveInterviewPage() {
         (new Date().getHours() < 12 ? "AM" : "PM"),
     },
   ]);
-  const [code, setCode] = useState<string>("# Write your solution here");
-  const [output, setOutput] = useState<string>("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedStack = searchParams.get("stack") || "frontend";
-  const selectedLanguage = searchParams.get("language") || "Python";
+  const selectedLanguage = searchParams.get("language") || getDefaultLanguageByStack(selectedStack);
   const selectedCompanyTier = searchParams.get("company_tier") || "startup";
-  const [editorTheme, setEditorTheme] = useState("light");
+  const [editorTheme, setEditorTheme] = useState("auto");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const { theme } = useTheme();
 
@@ -63,6 +61,14 @@ export default function LiveInterviewPage() {
     : editorTheme;
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 상태 추가
+  const [sessionConfig, setSessionConfig] = useState({
+    stack: selectedStack,
+    language: selectedLanguage,
+    company_tier: selectedCompanyTier,
+    difficulty: searchParams.get("difficulty") || "easy",
+  });
 
   // Timer countdown
   useEffect(() => {
@@ -81,7 +87,11 @@ export default function LiveInterviewPage() {
         id: chats.length + 1,
         sender: "user",
         message: chatMessage,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
       },
     ];
     setChats(newChats);
@@ -92,12 +102,21 @@ export default function LiveInterviewPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: newChats,
-        stack: selectedStack,
-        company_tier: selectedCompanyTier,
-        language: selectedLanguage,
+        stack: sessionConfig.stack,
+        company_tier: sessionConfig.company_tier,
+        language: sessionConfig.language,
+        difficulty: sessionConfig.difficulty,
       }),
     });
     const data = await res.json();
+
+    // 세션 정보가 응답에 있으면 상태 업데이트
+    if (data.sessionConfig) {
+      setSessionConfig((prev) => ({
+        ...prev,
+        ...data.sessionConfig,
+      }));
+    }
 
     setChats((prev) => [
       ...prev,
@@ -105,19 +124,34 @@ export default function LiveInterviewPage() {
         id: prev.length + 1,
         sender: "ai",
         message: data.reply,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }),
       },
     ]);
   };
 
   // 코드 실행
   const handleRunCode = async () => {
+    let languageToSend = sessionConfig.language;
+
+    if (sessionConfig.stack === "frontend") {
+      languageToSend = "javascript"; // 프론트엔드 스택은 JavaScript로 처리
+    } else if (sessionConfig.stack === "java-backend") {
+      languageToSend = "java";
+    } else if (sessionConfig.stack === "database") {
+      languageToSend = "mysql";
+    }
+
     const res = await fetch("/api/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        code,
-        stack: selectedStack,
+        code: code,
+        language: languageToSend,
+        stack: sessionConfig.stack,
       }),
     });
     const data = await res.json();
@@ -175,13 +209,11 @@ export default function LiveInterviewPage() {
         id: prev.length + 1,
         sender: "ai",
         message: data.reply,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date().toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
           hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() +
-          " " +
-          (new Date().getHours() < 12 ? "AM" : "PM"),
+        }),
       },
     ]);
 
@@ -195,6 +227,61 @@ export default function LiveInterviewPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }
 
+  // 스택별 기본 언어 매핑 함수 추가
+  function getDefaultLanguageByStack(stack: string) {
+    switch (stack.toLowerCase()) {
+      case "frontend":
+        return "html";
+      case "java-backend":
+        return "java";
+      case "database":
+        return "mysql";
+      default:
+        return "python";
+    }
+  }
+
+  // 언어별 초기 코드 템플릿 함수 추가
+  function getInitialCodeTemplate(language: string) {
+    switch (language.toLowerCase()) {
+      case "python":
+        return "# Write your solution here";
+      case "javascript":
+      case "typescript":
+        return "// Write your solution here";
+      case "java":
+        return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
+      case "cpp":
+      case "c++":
+        return "// Write your solution here";
+      default:
+        return "// Write your solution here";
+    }
+  }
+
+  function getMonacoLanguage(lang: string) {
+    switch (lang.toLowerCase()) {
+      case "python":
+        return "python";
+      case "javascript":
+        return "javascript";
+      case "typescript":
+        return "typescript";
+      case "java":
+        return "java";
+      case "c":
+      case "cpp":
+      case "c++":
+        return "cpp"; // Monaco는 c/c++ 모두 cpp로 처리
+      default:
+        return "python";
+    }
+  }
+
+  const [code, setCode] = useState<string>(getInitialCodeTemplate(selectedLanguage));
+  const [output, setOutput] = useState<string>("");
+
+  // 스크롤 효과
   useEffect(() => {
     // 채팅이 추가될 때마다 맨 아래로 스크롤
     if (scrollRef.current) {
@@ -357,7 +444,7 @@ export default function LiveInterviewPage() {
               <div className="flex-1">
                 <MonacoEditor
                   height="400px"
-                  language={selectedLanguage.toLowerCase()}
+                  language={getMonacoLanguage(sessionConfig.language || "python")}
                   value={code}
                   onChange={(value) => setCode(value ?? "")}
                   theme={autoEditorTheme}

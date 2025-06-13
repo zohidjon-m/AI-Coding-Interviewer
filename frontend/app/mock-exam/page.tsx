@@ -29,31 +29,90 @@ const MONACO_THEMES = [
   { label: "High Contrast", value: "hc-black" },
 ];
 
+// 스택별 기본 언어 매핑 함수 추가
+function getDefaultLanguageByStack(stack: string) {
+  switch (stack.toLowerCase()) {
+    case "frontend":
+      return "javascript";
+    case "backend":
+      return "python";
+    case "java":
+      return "java";
+    case "c++":
+      return "cpp";
+    case "node":
+      return "javascript";
+    case "react":
+      return "javascript";
+    case "spring":
+      return "java";
+    // 필요에 따라 추가
+    default:
+      return "python";
+  }
+}
+
+function getInitialCodeTemplate(language: string) {
+  switch (language.toLowerCase()) {
+    case "python":
+      return "# Write your solution here";
+    case "javascript":
+    case "typescript":
+      return "// Write your solution here";
+    case "java":
+      return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
+    case "cpp":
+    case "c++":
+      return "// Write your solution here";
+    default:
+      return "// Write your solution here";
+  }
+}
+
+// Monaco에서 지원하는 언어 코드로 매핑하는 함수 추가
+function getMonacoLanguage(lang: string) {
+  switch (lang.toLowerCase()) {
+    case "python":
+      return "python";
+    case "javascript":
+      return "javascript";
+    case "typescript":
+      return "typescript";
+    case "java":
+      return "java";
+    case "c":
+    case "cpp":
+    case "c++":
+      return "cpp"; // Monaco는 c/c++ 모두 cpp로 처리
+    default:
+      return "python";
+  }
+}
+
 export default function MockExamPage() {
-  const [timeLeft, setTimeLeft] = useState(20 * 60); // 20분(1200초)으로 변경
+  // 시간을 1분(60초)으로 변경
+  const [timeLeft, setTimeLeft] = useState(60*60);
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<any[]>([
     {
       id: 1,
       sender: "ai",
       message: "Welcome to your mock coding test. You can ask questions or submit your code here.",
-      timestamp: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }).replace("오전", "").replace("오후", "").trim() +
-        " " +
-        (new Date().getHours() < 12 ? "AM" : "PM"),
+      timestamp: "", // 초기에는 빈 문자열
     },
   ]);
-  const [code, setCode] = useState<string>("# Write your solution here");
-  const [output, setOutput] = useState<string>("");
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedStack = searchParams.get("stack") || "frontend";
   const selectedCompanyTier = searchParams.get("company_tier") || "startup";
-  const selectedLanguage = "Python"; // 언어 고정
-  const [editorTheme, setEditorTheme] = useState("light");
+  const selectedLanguage = searchParams.get("language") || getDefaultLanguageByStack(selectedStack);
+  const [code, setCode] = useState<string>(getInitialCodeTemplate(selectedLanguage));
+  const [output, setOutput] = useState<string>("");
+  const [finalScore, setFinalScore] = useState<number | null>(null);
+  const [finalFeedback, setFinalFeedback] = useState<string>("");
+  const [result, setResult] = useState<"pass" | "fail" | null>(null);
+
+  const [editorTheme, setEditorTheme] = useState("auto");
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const { theme } = useTheme();
 
@@ -75,6 +134,24 @@ export default function MockExamPage() {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [chats]);
+
+  // 클라이언트 마운트 후 timestamp를 실제 시간으로 교체
+  useEffect(() => {
+    setChats((prev) => {
+      if (prev[0].timestamp) return prev; // 이미 세팅되어 있으면 무시
+      const updated = [...prev];
+      updated[0] = {
+        ...updated[0],
+        timestamp: new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }),
+      };
+      return updated;
+    });
+  }, []);
 
   // 채팅 전송
   const handleSendMessage = async () => {
@@ -108,18 +185,35 @@ export default function MockExamPage() {
         id: prev.length + 1,
         sender: "ai",
         message: data.reply,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }),
       },
     ]);
   };
 
   // 코드 실행
   const handleRunCode = async () => {
+    let languageToSend = selectedLanguage;
+
+    // 스택에 따라 언어 강제 지정 (interview와 동일하게)
+    if (selectedStack === "frontend") {
+      languageToSend = "javascript";
+    } else if (selectedStack === "java-backend") {
+      languageToSend = "java";
+    } else if (selectedStack === "database") {
+      languageToSend = "mysql";
+    }
+
     const res = await fetch("/api/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         code,
+        language: languageToSend,
         stack: selectedStack,
       }),
     });
@@ -148,13 +242,12 @@ export default function MockExamPage() {
         id: chats.length + 1,
         sender: "user",
         message: `Here is my code for the problem:\n\n${code}`,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date().toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
           hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() +
-          " " +
-          (new Date().getHours() < 12 ? "AM" : "PM"),
+        }),
       },
     ];
     setChats(newChats);
@@ -176,18 +269,53 @@ export default function MockExamPage() {
         id: prev.length + 1,
         sender: "ai",
         message: data.reply,
-        timestamp: new Date().toLocaleTimeString([], {
+        timestamp: new Date().toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
           hour12: true,
-        }).replace("오전", "").replace("오후", "").trim() +
-          " " +
-          (new Date().getHours() < 12 ? "AM" : "PM"),
+        }),
       },
     ]);
 
     setOutput(data.testResultText || "");
   }
+
+  useEffect(() => {
+    if (timeLeft === 0 && finalScore === null) {
+      // 시간 종료 시 서버에 최종 점수 요청
+      fetch("/api/mock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: chats,
+          stack: selectedStack,
+          company_tier: selectedCompanyTier,
+          requestFinalScore: true, // 서버에서 이 플래그로 최종 평가임을 구분
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setFinalScore(data.score);
+          setFinalFeedback(data.feedback);
+          setResult(data.score >= 60 ? "pass" : "fail");
+          setChats((prev) => [
+            ...prev,
+            {
+              id: prev.length + 1,
+              sender: "ai",
+              message: `Test finished!\n\nFinal Score: ${data.score}\nResult: ${data.score >= 60 ? "PASS" : "FAIL"}\n\n${data.feedback}`,
+              timestamp: new Date().toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true,
+              }),
+            },
+          ]);
+        });
+    }
+  }, [timeLeft, finalScore, chats, selectedStack, selectedCompanyTier]);
 
   function formatTime(seconds: number) {
     const mins = Math.floor(seconds / 60);
@@ -348,7 +476,7 @@ export default function MockExamPage() {
               <div className="flex-1">
                 <MonacoEditor
                   height="400px"
-                  language={selectedLanguage.toLowerCase()}
+                  language={getMonacoLanguage(selectedLanguage)}
                   value={code}
                   onChange={(value) => setCode(value ?? "")}
                   theme={autoEditorTheme}
@@ -399,6 +527,15 @@ export default function MockExamPage() {
           <kbd className="bg-slate-100 px-1 rounded">Ctrl+L</kbd> for editor
         </div>
       </footer>
+
+      {/* Final Score / Feedback 메시지 */}
+      {finalScore !== null && (
+        <div className={`mt-4 p-4 rounded text-lg font-bold ${result === "pass" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+          Final Score: {finalScore} / 100<br />
+          Result: {result === "pass" ? "PASS" : "FAIL"}
+          <div className="mt-2 text-base font-normal">{finalFeedback}</div>
+        </div>
+      )}
     </div>
   )
 }
