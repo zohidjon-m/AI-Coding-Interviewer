@@ -83,7 +83,7 @@ function getMonacoLanguage(lang: string) {
 
 export default function MockExamPage() {
   // 시간을 1분(60초)으로 변경
-  const [timeLeft, setTimeLeft] = useState(60*60);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<any[]>([
     {
