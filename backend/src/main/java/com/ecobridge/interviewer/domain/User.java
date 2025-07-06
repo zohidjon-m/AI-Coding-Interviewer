@@ -3,6 +3,8 @@ package com.ecobridge.interviewer.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +35,11 @@ public class User extends Auditable {
     @Column(nullable = false, length = 120)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 40)
-    private Role role; // candidate, admin ..
+    @Enumerated(EnumType.STRING)// Hibernate passes the enum name
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)       // tell Hibernate it’s a PG enum
+    @Column(columnDefinition = "role_enum", nullable = false)
+    @Builder.Default
+    private Role role = Role.CANDIDATE ; // candidate, admin ..
 
     // ---------- RELATIONS ----------
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
