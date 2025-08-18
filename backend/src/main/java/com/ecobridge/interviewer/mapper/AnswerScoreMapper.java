@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface AnswerScoreMapper {
-    Score toEntity(AnswerScoreRequestDTO dto, @Context Answer answer);
-    AnswerScoreResponseDTO toDto(Score entity);
+  Score toEntity(AnswerScoreRequestDTO dto, @Context Answer answer);
+
+  AnswerScoreResponseDTO toDto(Score entity);
 }

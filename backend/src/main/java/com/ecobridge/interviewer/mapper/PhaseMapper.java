@@ -10,6 +10,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface PhaseMapper {
-    Phase toEntity(PhaseRequestDTO dto, @Context InterviewSession session);
-    PhaseResponseDTO toDto(Phase entity, Question question);
+  Phase toEntity(PhaseRequestDTO dto, @Context InterviewSession session);
+
+  PhaseResponseDTO toDto(Phase entity, Question question);
 }
