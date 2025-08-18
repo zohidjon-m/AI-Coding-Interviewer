@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface QuestionMapper {
-    Question toEntity(QuestionRequestDTO dto, @Context Phase phase);
-    QuestionResponseDTO toDto(Question entity);
+  Question toEntity(QuestionRequestDTO dto, @Context Phase phase);
+
+  QuestionResponseDTO toDto(Question entity);
 }

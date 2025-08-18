@@ -6,8 +6,4 @@ import com.ecobridge.interviewer.domain.ExperienceLevel;
 import com.ecobridge.interviewer.domain.TechStack;
 
 public record SessionPreferencesResponseDTO(
-        TechStack stack,
-        ExperienceLevel experience,
-        Difficulty difficulty,
-        CompanyTier companyTier
-) { }
+    TechStack stack, ExperienceLevel experience, Difficulty difficulty, CompanyTier companyTier) {}

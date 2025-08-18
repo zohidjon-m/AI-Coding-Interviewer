@@ -6,7 +6,7 @@ import com.ecobridge.interviewer.dto.RunRequestDTO;
 import com.ecobridge.interviewer.dto.RunResultDTO;
 
 public interface Judge0Adapter {
-    Score score(Answer answer);
-    RunResultDTO dryRun(RunRequestDTO dto);          // << NEW
+  Score score(Answer answer);
 
+  RunResultDTO dryRun(RunRequestDTO dto); // << NEW
 }

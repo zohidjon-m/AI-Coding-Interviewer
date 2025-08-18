@@ -6,6 +6,7 @@ import com.ecobridge.interviewer.dto.AnswerScoreRequestDTO;
 import com.ecobridge.interviewer.dto.AnswerScoreResponseDTO;
 
 public interface AnswerService {
-    AnswerResponseDTO submitAnswer(AnswerRequestDTO request);
-    AnswerScoreResponseDTO scoreAnswer(AnswerScoreRequestDTO request);
+  AnswerResponseDTO submitAnswer(AnswerRequestDTO request);
+
+  AnswerScoreResponseDTO scoreAnswer(AnswerScoreRequestDTO request);
 }
