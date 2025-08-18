@@ -1,6 +1,5 @@
 package com.ecobridge.interviewer.web;
 
-
 import com.ecobridge.interviewer.dto.AuthenticationDTO;
 import com.ecobridge.interviewer.dto.UserRequestDTO;
 import com.ecobridge.interviewer.dto.UserResponseDTO;
@@ -19,16 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(dto));
-    }
+  @PostMapping("/register")
+  public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRequestDTO dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(userService.register(dto));
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> login(@RequestBody @Valid AuthenticationDTO dto) {
-        return ResponseEntity.ok(userService.login(dto.email(), dto.password()));
-    }
-
+  @PostMapping("/login")
+  public ResponseEntity<UserResponseDTO> login(@RequestBody @Valid AuthenticationDTO dto) {
+    return ResponseEntity.ok(userService.login(dto.email(), dto.password()));
+  }
 }
