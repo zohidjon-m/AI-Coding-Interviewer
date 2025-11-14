@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="7ac17c08-630f-4e6c-b29d-e366510ab356" name="ai_interviewer@localhost Mapping">
+      <data-sources db="09b3aa60-8eca-4a20-ab3e-bdacd720d46b" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+    <mapping uuid="7ac17c08-630f-4e6c-b29d-e366510ab356" name="ai_interviewer@localhost Mapping">
+      <data-sources db="09b3aa60-8eca-4a20-ab3e-bdacd720d46b" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+    <mapping uuid="7ac17c08-630f-4e6c-b29d-e366510ab356" name="ai_interviewer@localhost Mapping">
+      <data-sources db="09b3aa60-8eca-4a20-ab3e-bdacd720d46b" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+    <mapping uuid="7ac17c08-630f-4e6c-b29d-e366510ab356" name="ai_interviewer@localhost Mapping">
+      <data-sources db="09b3aa60-8eca-4a20-ab3e-bdacd720d46b" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+  </component>
+</project>
