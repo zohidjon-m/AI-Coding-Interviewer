@@ -18,22 +18,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 class QuestionServiceImpl implements QuestionService {
 
-    private final QuestionRepository questionRepo;
-    private final QuestionMapper questionMapper;
-    private final PhaseRepository phaseRepository;
+  private final QuestionRepository questionRepo;
+  private final QuestionMapper questionMapper;
+  private final PhaseRepository phaseRepository;
 
-    @Override
-    @Transactional
-    public QuestionResponseDTO addQuestion(QuestionRequestDTO request) {
-        Phase phase = phaseRepository.getReferenceById(request.phaseId());
-        Question q = questionMapper.toEntity(request,phase);
-        return questionMapper.toDto(questionRepo.save(q));
-    }
+  @Override
+  @Transactional
+  public QuestionResponseDTO addQuestion(QuestionRequestDTO request) {
+    Phase phase = phaseRepository.getReferenceById(request.phaseId());
+    Question q = questionMapper.toEntity(request, phase);
+    return questionMapper.toDto(questionRepo.save(q));
+  }
 
-    @Override
-    public QuestionResponseDTO getQuestion(Long id) {
-        return questionRepo.findById(id)
-                .map(questionMapper::toDto)
-                .orElseThrow();
-    }
+  @Override
+  public QuestionResponseDTO getQuestion(Long id) {
+    return questionRepo.findById(id).map(questionMapper::toDto).orElseThrow();
+  }
 }

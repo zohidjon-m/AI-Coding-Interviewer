@@ -12,23 +12,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/sessions")
 @RequiredArgsConstructor
 class InterviewSessionController {
-    private final InterviewService               interviewService;
-    private final InterviewOrchestrationService  orchestrationService;
-    private final AnswerService                  answerService;
-    private final RunService                     runService;
+  private final InterviewService interviewService;
+  private final InterviewOrchestrationService orchestrationService;
+  private final AnswerService answerService;
+  private final RunService runService;
 
-    // ─────────────── Session CRUD ───────────────
-    @PostMapping
-    public ResponseEntity<InterviewSessionResponseDTO> create(@RequestBody @Valid InterviewSessionRequestDTO dto) {
-        InterviewSessionResponseDTO resp = interviewService.createSession(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
-    }
+  // ─────────────── Session CRUD ───────────────
+  @PostMapping
+  public ResponseEntity<InterviewSessionResponseDTO> create(
+      @RequestBody @Valid InterviewSessionRequestDTO dto) {
+    InterviewSessionResponseDTO resp = interviewService.createSession(dto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+  }
 
-    @GetMapping("/{id}")
-    public InterviewSessionResponseDTO get(@PathVariable Long id) {
-        return interviewService.getSession(id);
-    }
+  @GetMapping("/{id}")
+  public InterviewSessionResponseDTO get(@PathVariable Long id) {
+    return interviewService.getSession(id);
+  }
 
+<<<<<<< HEAD
     // ─────────────── Phase progression ───────────────
     @PostMapping("/{id}/phases/next")
     public PhaseResponseDTO nextPhase(@PathVariable Long id) {
@@ -44,15 +46,31 @@ class InterviewSessionController {
     public AnswerResponseDTO submit(@RequestBody @Valid AnswerRequestDTO dto) {
         return answerService.submitAnswer(dto);
     }
+=======
+  // ─────────────── Phase progression ───────────────
+  @PostMapping("/{id}/phases/next")
+  public PhaseResponseDTO nextPhase(@PathVariable Long id) {
+    return orchestrationService.advancePhase(id);
+  }
 
-    @PostMapping("/answers/score")
-    public AnswerScoreResponseDTO score(@RequestBody @Valid AnswerScoreRequestDTO dto) {
-        return answerService.scoreAnswer(dto);
-    }
+  @PostMapping("/{id}baseline-question")
+  public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {}
 
-    // ─────────────── Code run (Judge0) ───────────────
-    @PostMapping("/run")
-    public RunResultDTO run(@RequestBody @Valid RunRequestDTO dto) {
-        return runService.execute(dto);
-    }
+  // ─────────────── Answers ───────────────
+  @PostMapping("/answers")
+  public AnswerResponseDTO submit(@RequestBody @Valid AnswerRequestDTO dto) {
+    return answerService.submitAnswer(dto);
+  }
+>>>>>>> b549c462ca50090d650d8f1c07ff8f42ada0d14d
+
+  @PostMapping("/answers/score")
+  public AnswerScoreResponseDTO score(@RequestBody @Valid AnswerScoreRequestDTO dto) {
+    return answerService.scoreAnswer(dto);
+  }
+
+  // ─────────────── Code run (Judge0) ───────────────
+  @PostMapping("/run")
+  public RunResultDTO run(@RequestBody @Valid RunRequestDTO dto) {
+    return runService.execute(dto);
+  }
 }
