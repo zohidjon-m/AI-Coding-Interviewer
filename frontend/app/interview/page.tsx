@@ -9,7 +9,6 @@ import {
   Play,
   Square,
   Send,
-  Clock,
   HelpCircle,
   Settings,
   MessageSquare,
@@ -31,7 +30,6 @@ const MONACO_THEMES = [
 
 export default function LiveInterviewPage() {
   // 상태
-  const [timeLeft, setTimeLeft] = useState(45 * 60);
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<any[]>([
     {
@@ -220,11 +218,38 @@ export default function LiveInterviewPage() {
     setOutput(data.testResultText || "");
   }
 
-  // --- formatTime 함수 추가 ---
-  function formatTime(seconds: number) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+
+
+  // 스택별 기본 언어 매핑 함수 추가
+  function getDefaultLanguageByStack(stack: string) {
+    switch (stack.toLowerCase()) {
+      case "frontend":
+        return "html";
+      case "java-backend":
+        return "java";
+      case "database":
+        return "mysql";
+      default:
+        return "python";
+    }
+  }
+
+  // 언어별 초기 코드 템플릿 함수 추가
+  function getInitialCodeTemplate(language: string) {
+    switch (language.toLowerCase()) {
+      case "python":
+        return "# Write your solution here";
+      case "javascript":
+      case "typescript":
+        return "// Write your solution here";
+      case "java":
+        return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
+      case "cpp":
+      case "c++":
+        return "// Write your solution here";
+      default:
+        return "// Write your solution here";
+    }
   }
 
   // 스택별 기본 언어 매핑 함수 추가
@@ -304,7 +329,7 @@ export default function LiveInterviewPage() {
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Clock className={`h-4 w-4 ${timeLeft < 120 ? "text-red-500" : "text-slate-600"}`} />
+            {/* <Clock className={`h-4 w-4 ${timeLeft < 120 ? "text-red-500" : "text-slate-600"}`} />
             <span
               className={`font-mono ${
                 timeLeft < 120
@@ -313,7 +338,7 @@ export default function LiveInterviewPage() {
               }`}
             >
               {formatTime(timeLeft)}
-            </span>
+            </span> */}
           </div>
           <div className="relative">
             <Button
