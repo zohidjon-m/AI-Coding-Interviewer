@@ -68,6 +68,14 @@ export default function LiveInterviewPage() {
     difficulty: searchParams.get("difficulty") || "easy",
   });
 
+  // Timer countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   // 채팅 전송
   const handleSendMessage = async () => {
     if (!chatMessage.trim()) return;
@@ -211,6 +219,38 @@ export default function LiveInterviewPage() {
   }
 
 
+
+  // 스택별 기본 언어 매핑 함수 추가
+  function getDefaultLanguageByStack(stack: string) {
+    switch (stack.toLowerCase()) {
+      case "frontend":
+        return "html";
+      case "java-backend":
+        return "java";
+      case "database":
+        return "mysql";
+      default:
+        return "python";
+    }
+  }
+
+  // 언어별 초기 코드 템플릿 함수 추가
+  function getInitialCodeTemplate(language: string) {
+    switch (language.toLowerCase()) {
+      case "python":
+        return "# Write your solution here";
+      case "javascript":
+      case "typescript":
+        return "// Write your solution here";
+      case "java":
+        return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
+      case "cpp":
+      case "c++":
+        return "// Write your solution here";
+      default:
+        return "// Write your solution here";
+    }
+  }
 
   // 스택별 기본 언어 매핑 함수 추가
   function getDefaultLanguageByStack(stack: string) {

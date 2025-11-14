@@ -33,33 +33,41 @@ const MONACO_THEMES = [
 function getDefaultLanguageByStack(stack: string) {
   switch (stack.toLowerCase()) {
     case "frontend":
-      return "html";
-    case "java-backend":
+      return "javascript";
+    case "backend":
+      return "python";
+    case "java":
       return "java";
-    case "database":
-      return "mysql";
+    case "c++":
+      return "cpp";
+    case "node":
+      return "javascript";
+    case "react":
+      return "javascript";
+    case "spring":
+      return "java";
+    // 필요에 따라 추가
     default:
       return "python";
   }
 }
 
-  // 언어별 초기 코드 템플릿 함수 추가
-  function getInitialCodeTemplate(language: string) {
-    switch (language.toLowerCase()) {
-      case "python":
-        return "# Write your solution here";
-      case "javascript":
-      case "typescript":
-        return "// Write your solution here";
-      case "java":
-        return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
-      case "cpp":
-      case "c++":
-        return "// Write your solution here";
-      default:
-        return "// Write your solution here";
-    }
+function getInitialCodeTemplate(language: string) {
+  switch (language.toLowerCase()) {
+    case "python":
+      return "# Write your solution here";
+    case "javascript":
+    case "typescript":
+      return "// Write your solution here";
+    case "java":
+      return "public class Solution {\n    public static void main(String[] args) {\n        // Write your solution here\n    }\n}";
+    case "cpp":
+    case "c++":
+      return "// Write your solution here";
+    default:
+      return "// Write your solution here";
   }
+}
 
 // Monaco에서 지원하는 언어 코드로 매핑하는 함수 추가
 function getMonacoLanguage(lang: string) {
@@ -83,7 +91,7 @@ function getMonacoLanguage(lang: string) {
 
 export default function MockExamPage() {
   // 시간을 1분(60초)으로 변경
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(60*60);
   const [chatMessage, setChatMessage] = useState("");
   const [chats, setChats] = useState<any[]>([
     {
@@ -96,18 +104,8 @@ export default function MockExamPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedStack = searchParams.get("stack") || "frontend";
+  const selectedCompanyTier = searchParams.get("company_tier") || "startup";
   const selectedLanguage = searchParams.get("language") || getDefaultLanguageByStack(selectedStack);
-
-  // company_tier 파라미터를 쿼리에서 가져오거나 기본값 설정
-  const selectedCompanyTier = searchParams.get("company_tier") || "default";
-
-  const [sessionConfig, setSessionConfig] = useState({
-    stack: selectedStack,
-    language: selectedLanguage,
-    company_tier: selectedCompanyTier, // 필요하다면 유지
-    // mock에서는 difficulty 필요 없으면 제외
-  });
-
   const [code, setCode] = useState<string>(getInitialCodeTemplate(selectedLanguage));
   const [output, setOutput] = useState<string>("");
   const [finalScore, setFinalScore] = useState<number | null>(null);
@@ -201,11 +199,12 @@ export default function MockExamPage() {
   const handleRunCode = async () => {
     let languageToSend = selectedLanguage;
 
-    if (sessionConfig.stack === "frontend") {
-      languageToSend = "javascript"; // 프론트엔드 스택은 JavaScript로 처리
-    } else if (sessionConfig.stack === "java-backend") {
+    // 스택에 따라 언어 강제 지정 (interview와 동일하게)
+    if (selectedStack === "frontend") {
+      languageToSend = "javascript";
+    } else if (selectedStack === "java-backend") {
       languageToSend = "java";
-    } else if (sessionConfig.stack === "database") {
+    } else if (selectedStack === "database") {
       languageToSend = "mysql";
     }
 
@@ -476,7 +475,8 @@ export default function MockExamPage() {
             <div className="flex-1 p-4 flex flex-col">
               <div className="flex-1">
                 <MonacoEditor
-                  language={getMonacoLanguage(sessionConfig.language || "python")}
+                  height="400px"
+                  language={getMonacoLanguage(selectedLanguage)}
                   value={code}
                   onChange={(value) => setCode(value ?? "")}
                   theme={autoEditorTheme}
