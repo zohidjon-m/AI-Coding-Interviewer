@@ -53,6 +53,17 @@ class InterviewSessionController {
     return orchestrationService.advancePhase(id);
   }
 
+<<<<<<< HEAD
+    @PostMapping("/{id}baseline-question")
+    public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {
+        
+    }
+    // ─────────────── Answers ───────────────
+    @PostMapping("/answers")
+    public AnswerResponseDTO submit(@RequestBody @Valid AnswerRequestDTO dto) {
+        return answerService.submitAnswer(dto);
+    }
+=======
   @PostMapping("/{id}baseline-question")
   public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {}
 
@@ -61,7 +72,11 @@ class InterviewSessionController {
   public AnswerResponseDTO submit(@RequestBody @Valid AnswerRequestDTO dto) {
     return answerService.submitAnswer(dto);
   }
+<<<<<<< HEAD
 >>>>>>> b549c462ca50090d650d8f1c07ff8f42ada0d14d
+=======
+>>>>>>> 3cac057afd4d978791762ad7917d77a35b6611a2
+>>>>>>> zohid
 
   @PostMapping("/answers/score")
   public AnswerScoreResponseDTO score(@RequestBody @Valid AnswerScoreRequestDTO dto) {
