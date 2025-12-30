@@ -30,18 +30,17 @@ class InterviewSessionController {
     return interviewService.getSession(id);
   }
 
-//
-//    @PostMapping("/{id}baseline-question")
-//    public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {
-//
-//    }
- 
+  //
+  //    @PostMapping("/{id}baseline-question")
+  //    public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {
+  //
+  //    }
+
   // ─────────────── Phase progression ───────────────
   @PostMapping("/{id}/phases/next")
   public PhaseResponseDTO nextPhase(@PathVariable Long id) {
     return orchestrationService.advancePhase(id);
   }
-
 
   @PostMapping("/{id}baseline-question")
   public ResponseEntity<QuestionResponseDTO> baselineQuestion(@PathVariable Long id) {}
