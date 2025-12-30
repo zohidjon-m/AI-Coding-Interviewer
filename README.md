@@ -6,7 +6,7 @@ The solution integrates **React.js**, **Spring Boot**, **PostgreSQL**, **OpenAI 
 
 ---
 
-## 🚀 Overview
+##  Overview
 
 This system conducts coding interviews end-to-end without human intervention. The interviewer adapts in real time to the candidate’s:
 
@@ -19,7 +19,7 @@ The engine uses OpenAI 4.1 to generate questions and prompts and Judge0 to execu
 
 ---
 
-## 🧩 Key Features
+##  Key Features
 
 ### Adaptive Interview Generation
 Every session begins with a JSON configuration. The interviewer recalibrates difficulty, question types, example size, and focus areas based on seniority and career objectives.
@@ -47,7 +47,7 @@ The platform enforces a strict, realistic interview sequence:
 
 ---
 
-## 🧠 Automated Evaluation Engine
+##  Automated Evaluation Engine
 
 ### Code Execution
 - Code is executed via **Judge0** to support multiple programming languages.
@@ -72,7 +72,7 @@ System design:
 
 ---
 
-## 📝 Final Report Generation
+##  Final Report Generation
 
 At the end of the interview, the system synthesizes a concise summary (≤150 words) highlighting:
 
@@ -83,7 +83,7 @@ At the end of the interview, the system synthesizes a concise summary (≤150 wo
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 - React.js  
@@ -99,7 +99,7 @@ At the end of the interview, the system synthesizes a concise summary (≤150 wo
 
 ---
 
-## ⚙️ Local Development Setup
+##  Local Development Setup
 
 ### Backend
 ```bash
