@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface SessionPreferencesMapper {
 
-    SessionPreferences toEntity(SessionPreferencesRequestDTO dto);
+  SessionPreferences toEntity(SessionPreferencesRequestDTO dto);
 
-    SessionPreferencesResponseDTO toDto(SessionPreferences entity);
+  SessionPreferencesResponseDTO toDto(SessionPreferences entity);
 }
